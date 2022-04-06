@@ -6,13 +6,13 @@
     - [] \_\_init\_\_ should
         - [] crawl page and save entire source code to a variable
         - [] get 'robots.txt' and save output to file if response is 200 and not null
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
-    - [] 
+    - [] other methods: 
+        - [] extract all comments from source code -> list
+        - [] brute force directories -> TODO: add type hint 
+        - [] parse text for flag (reuse code from forfuf) -> int (0 if flag, 1 if not found)
+        - [] 
+        - [] 
+        - [] 
+        - [] 
+        - [] 
+        - [] 

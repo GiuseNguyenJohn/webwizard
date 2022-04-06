@@ -9,3 +9,6 @@ Tested: Python 3.9 on Kali Linux and Python _ on Ubuntu TODO: (David) fill in py
 import requests
 import bs4
 
+class Client:
+    def __init__(self) -> None:
+        pass
