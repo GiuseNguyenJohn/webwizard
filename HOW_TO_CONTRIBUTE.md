@@ -22,5 +22,6 @@
         - [] 
 
 ## Ideas
-- make branch for Client method to download entire website source code
-    and parse for flag (use `wget -m` ?)
+- make branch for Client method to download entire website source code and parse for flag
+    (use `wget --mirror --convert-links --html-extension --wait=2 -o source <url>` ?)
+    source: https://alvinalexander.com/linux-unix/how-to-make-offline-mirror-copy-website-with-wget/
