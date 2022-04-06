@@ -13,8 +13,7 @@ import re
 import requests
 
 def parse_for_flag(crib: str, text: str) -> list:
-    """
-    Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
+    """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
     and base64 encoded flags in given text.
 
     Dependencies:
@@ -22,6 +21,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     - re
     - codecs
     """
+
     crib = crib.strip("{")
     regex_string = ""
     for character in crib:
@@ -51,5 +51,11 @@ def parse_for_flag(crib: str, text: str) -> list:
     return possible_flags
 
 class Client:
+"""A class to describe a client connected to a remote server
+
+Dependencies:
+- 
+"""
+
     def __init__(self) -> None:
         pass
