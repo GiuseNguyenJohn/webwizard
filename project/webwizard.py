@@ -51,11 +51,11 @@ def parse_for_flag(crib: str, text: str) -> list:
     return possible_flags
 
 class Client:
-"""A class to describe a client connected to a remote server
+    """A class to describe a client connected to a remote server
 
-Dependencies:
-- 
-"""
+    Dependencies:
+    - 
+    """
 
     def __init__(self) -> None:
         pass
