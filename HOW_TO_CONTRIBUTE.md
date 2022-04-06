@@ -22,5 +22,6 @@
         - [] 
 
 ## Ideas
-- make branch for Client method to download entire website source code and parse for flag
-    (no linux binaries allowed, python only)
+- make branch for Client method to download entire website source code and
+    parse for flag (no linux binaries allowed, python only), try using
+    this: https://pypi.org/project/pywebcopy/
