@@ -20,3 +20,7 @@
             - [] xss
         - [] 
         - [] 
+
+## Ideas
+- make branch for Client method to download entire website source code
+    and parse for flag (use `wget -m` ?)
