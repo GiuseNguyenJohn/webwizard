@@ -10,9 +10,13 @@
         - [] extract all comments from source code -> list
         - [] brute force directories -> TODO: add type hint 
         - [] parse text for flag (reuse code from forfuf) -> int (0 if flag, 1 if not found)
-        - [] 
-        - [] 
-        - [] 
-        - [] 
+        - [] check out cookies
+            - [] 
+        - [] attack login pages
+            - [] sql inject
+            - [] command inject
+        - [] attack input pages
+            - [] command inject
+            - [] xss
         - [] 
         - [] 
