@@ -40,7 +40,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     plaintext_flags = plaintext_pattern.findall(text)
     rot13_flags = rot13_pattern.findall(text)
     base64_flags = base64_pattern.findall(text)
-    # append flag with description of encoding to possible flags
+    # append decoded flag with description of encoding to possible flags
     if plaintext_flags:
         possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
     if rot13_flags:
