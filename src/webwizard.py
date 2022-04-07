@@ -28,7 +28,7 @@ def parse_for_flag(crib: str, text: str) -> list:
         regex_string += character
         regex_string += ".{0,2}"
     # regex string will match flag with any padding of less than 2 characters
-    # in between each flag character
+    # in between each flag character (above)
     regex_string += "\\{.*?\\}"
     # Pattern of plaintext, rot13, and base64
     plaintext_pattern = re.compile(regex_string)

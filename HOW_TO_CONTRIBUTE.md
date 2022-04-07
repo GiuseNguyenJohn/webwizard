@@ -1,6 +1,8 @@
 # How to Contribute
 
 ## Master List of Tasks
+- Functions:
+    - [x] parse text for flag -> list
 
 - [] Create class 'client' with parameters: URL, PORT=443 (default), FlAG_FORMAT
     - [] \_\_init\_\_ should
@@ -9,19 +11,17 @@
     - [] other methods: 
         - [] extract all comments from source code -> list
         - [] brute force directories -> TODO: add type hint 
-        - [] parse text for flag (reuse code from forfuf) -> int (0 if flag, 1 if not found)
         - [] check out cookies
-            - [] 
-        - [] attack login pages
-            - [] sql inject
-            - [] command inject
-        - [] attack input pages
-            - [] command inject
-            - [] xss
-        - [] 
-        - [] 
 
 ## Ideas
 - make branch for Client method to download entire website source code and
     parse for flag (no linux binaries allowed, python only), try using
     this: https://pypi.org/project/pywebcopy/
+    
+- attack login pages
+    - sql inject
+    - command inject
+    
+- attack input pages
+    - command inject
+    - xss
