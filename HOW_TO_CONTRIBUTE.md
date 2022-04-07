@@ -5,7 +5,7 @@
     - [x] parse text for flag -> list
 
 - [] Create class 'client' with parameters: URL, PORT=443 (default), FlAG_FORMAT
-    - [] \_\_init\_\_ should
+    - [] \\_\\_init\\_\\_ should
         - [] crawl page and save entire source code to a variable
         - [] get 'robots.txt' and save output to file if response is 200 and not null
     - [] other methods: 
@@ -25,3 +25,17 @@
 - attack input pages
     - command inject
     - xss
+
+## ASCII Art
+Put suggestions for cool fonts here
+
+**Fire Font-k**
+```
+                  )                             (     
+ (  (      (   ( /(  (  (   (          )  (     )\ )  
+ )\))(    ))\  )\()) )\))(  )\  (   ( /(  )(   (()/(  
+((_)()\  /((_)((_)\ ((_)()\((_) )\  )(_))(()\   ((_)) 
+_(()((_)(_))  | |(_)_(()((_)(_)((_)((_)_  ((_)  _| |  
+\ V  V // -_) | '_ \\ V  V /| ||_ // _` || '_|/ _` |  
+ \_/\_/ \___| |_.__/ \_/\_/ |_|/__|\__,_||_|  \__,_|  
+```
