@@ -44,9 +44,9 @@ def parse_for_flag(crib: str, text: str) -> list:
     if plaintext_flags:
         possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
     if rot13_flags:
-        possible_flags += ["rot13 flag: {}".format(x) for x in rot13_flags]
+        possible_flags += ["rot13 flag: {}".format(codecs.decode(x, 'rot-13')) for x in rot13_flags]
     if base64_flags:
-        possible_flags += ["base64 flag: {}".format(x) for x in base64_flags]
+        possible_flags += ["base64 flag: {}".format(base64.b64decode(bytes(x, 'utf-8')).decode()) for x in base64_flags]
     # return possible flags
     return possible_flags
 
