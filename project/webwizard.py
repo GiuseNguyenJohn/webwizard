@@ -33,7 +33,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     # Pattern of plaintext, rot13, and base64
     plaintext_pattern = re.compile(regex_string)
     rot13_pattern = re.compile(codecs.encode(regex_string, 'rot-13'))
-    base64_first_three = base64.b64encode(bytes(start_flag, 'utf-8')).decode()
+    base64_first_three = base64.b64encode(bytes(crib, 'utf-8')).decode()
     base64_pattern = re.compile(f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s")
     # Get list of possible flags
     possible_flags = []
