@@ -1,6 +1,7 @@
 """Tests for webwizard.py core functionality."""
 
 import unittest
+import webwizard
 
 class TestBasic(unittest.TestCase):
     def test_parse_for_flag(self):
