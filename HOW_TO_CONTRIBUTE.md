@@ -6,9 +6,10 @@
 
 - [] Create class 'client' with parameters: URL, PORT=443 (default), FlAG_FORMAT
     - [] \\_\\_init\\_\\_ should
-        - [] crawl page and save entire source code to a variable
+        - [] 
         - [] get 'robots.txt' and save output to file if response is 200 and not null
     - [] other methods: 
+        - [] mirror (download) entire website and parse for flag -> int
         - [] extract all comments from source code -> list
         - [] brute force directories -> TODO: add type hint 
         - [] check out cookies

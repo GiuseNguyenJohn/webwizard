@@ -9,6 +9,8 @@ Tested: Python 3.9 on Kali Linux and Python _ on Ubuntu TODO: (David) fill in py
 import base64
 import bs4
 import codecs
+import os
+import pywebcopy
 import re
 import requests
 
@@ -51,11 +53,38 @@ def parse_for_flag(crib: str, text: str) -> list:
     return possible_flags
 
 class Client:
-    """A class to describe a client connected to a remote server
+    """A class to connect to a remote server"""
 
-    Dependencies:
-    - 
-    """
-
-    def __init__(self) -> None:
+    def __init__(self, url: str, crib: str) -> None:
+        self.url = url
+        self.crib = crib
         pass
+    
+    def mirror_website(self, folder: str = './', robots: bool = True) -> int:
+        """Download entire website at Client object's URL and parse
+        source code for flag
+
+        Dependencies:
+        - pywebcopy
+        - GNU cat
+        - GNU find
+        """
+
+        # name the directory that source code will be saved to
+        kwargs = {'project_name': f"source_{self.url.strip(r'http://').strip(r'https://')}"}
+        # download entire website
+        pywebcopy.save_website(
+            url=self.url,
+            project_folder=folder,
+            **kwargs
+        )
+        # concatenate all subfiles in website into one file to parse
+        project_name = kwargs['project_name']
+        source_filepath = os.path.join(folder, project_name)
+        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + > ./{project_name}.txt")
+        # parse source for flag
+        with open(f'./{project_name}.txt') as f:
+            if parse_for_flag(self.crib, f.read()):
+                print(flag for flag in parse_for_flag(self.crib, f.read()))
+                return 0
+        return 1
