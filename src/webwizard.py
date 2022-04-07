@@ -79,11 +79,11 @@ class Client:
             **kwargs
         )
         # concatenate all subfiles in website into one file to parse
-        project_name = kwargs['project_name']
-        source_filepath = os.path.join(folder, project_name)
-        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + > ./{project_name}.txt")
+        concat_filepath = os.path.join(folder, kwargs['project_name'] + '.txt')
+        source_filepath = os.path.join(folder, kwargs['project_name'])
+        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + > {concat_filepath}")
         # parse source for flag
-        with open(f'./{project_name}.txt') as f:
+        with open(f'{concat_filepath}') as f:
             if parse_for_flag(self.crib, f.read()):
                 print(flag for flag in parse_for_flag(self.crib, f.read()))
                 return 0
