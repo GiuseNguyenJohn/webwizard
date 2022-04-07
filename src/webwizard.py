@@ -37,9 +37,9 @@ def parse_for_flag(crib: str, text: str) -> list:
     base64_pattern = re.compile(f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s")
     # Get list of possible flags
     possible_flags = []
-    plaintext_flags = re.findall(plaintext_pattern)
-    rot13_flags = re.findall(rot13_pattern)
-    base64_flags = re.findall(base64_pattern)
+    plaintext_flags = plaintext_pattern.findall(text)
+    rot13_flags = rot13_pattern.findall(text)
+    base64_flags = base64_pattern.findall(text)
     # append flag with description of encoding to possible flags
     if plaintext_flags:
         possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
