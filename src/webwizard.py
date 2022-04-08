@@ -85,7 +85,7 @@ class Client:
         # parse source for flag
         with open(f'{concat_filepath}') as f:
             if parse_for_flag(self.crib, f.read()):
-                for flag in parse_for_flag(self.crib, f.read())):
+                for flag in parse_for_flag(self.crib, f.read()):
                     print(flag)
                 return 0
         return 1
