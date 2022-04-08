@@ -49,8 +49,12 @@ def parse_for_flag(crib: str, text: str) -> list:
         possible_flags += ["rot13 flag: {}".format(codecs.decode(x, 'rot-13')) for x in rot13_flags]
     if base64_flags:
         possible_flags += ["base64 flag: {}".format(base64.b64decode(bytes(x, 'utf-8')).decode()) for x in base64_flags]
-    # return possible flags
-    return possible_flags
+    # print possible flags and exit
+    if possible_flags:
+        for flag in possible_flags:
+            print(flag)
+        exit(0)
+    exit(1)
 
 class Client:
     """A class to connect to a remote server"""
@@ -81,11 +85,7 @@ class Client:
         # concatenate all subfiles in website into one file to parse
         concat_filepath = os.path.join(folder, kwargs['project_name'] + '.txt')
         source_filepath = os.path.join(folder, kwargs['project_name'])
-        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + > {concat_filepath}")
+        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + >> {concat_filepath}")
         # parse source for flag
         with open(f'{concat_filepath}') as f:
-            if parse_for_flag(self.crib, f.read()):
-                for flag in parse_for_flag(self.crib, f.read()):
-                    print(flag)
-                return 0
-        return 1
+            parse_for_flag(self.crib, f.read())
