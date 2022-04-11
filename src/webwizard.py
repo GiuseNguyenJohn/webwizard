@@ -56,6 +56,18 @@ def parse_for_flag(crib: str, text: str) -> list:
         exit(0)
     exit(1)
 
+def get_files_in_dir(path_to_directory: str) -> list
+    """Accepts a path to a directory and returns a list of filepaths
+    of every file in the directory.
+    """
+    
+    list_of_files = []
+    for root, dirs, files in os.walk(path_to_directory):
+        for file in files:
+            # append relative filepaths
+            list_of_files.append(os.path.join(root,file))
+    return list_of_files
+
 class Client:
     """A class to connect to a remote server"""
 
