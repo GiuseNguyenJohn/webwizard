@@ -25,7 +25,18 @@ class TestBasic(unittest.TestCase):
         return the correct paths?
         """
 
-        os.mkdir('./test')
+        # create temporary directory that will be destroyed and will
+        # destroy all files in it after program finishes executing
+        temp_dir = tempfile.TemporaryDirectory()
+        with open(f"{temp_dir.name}/file1", 'w') as f:
+            f.write('hi 1')
+        with open(f"{temp_dir.name}/file2", 'w') as f:
+            f.write('hi 2')
+        files = webwizard.get_files_in_dir(temp_dir.name)
+        correct_list = [f'{temp_dir.name}/file1', f'{temp_dir.name}/file2']
+        print(correct_list)
+        self.assertEqual(correct_list, files)
+        temp_dir.cleanup()
 
 if __name__ == "__main__":
     unittest.main()
