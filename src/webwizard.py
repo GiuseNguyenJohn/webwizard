@@ -114,7 +114,7 @@ class Client:
             with open(concat_filepath, 'a') as cfile:
                 cfile.write(text)
         # parse source for flag
-        with open(concat_filepath, 'rb') as f:
+        with open(concat_filepath) as f:
             text = f.read()
             parse_for_flag(self.crib, text)
         return None
