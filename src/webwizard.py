@@ -14,6 +14,21 @@ import pywebcopy
 import re
 import requests
 
+def get_files_in_dir(path_to_directory: str) -> list:
+    """Accepts a path to a directory and returns a list of filepaths
+    of every file in the directory.
+
+    Dependencies:
+    - os
+    """
+    
+    list_of_files = []
+    for root, dirs, files in os.walk(path_to_directory):
+        for file in files:
+            # append relative filepaths
+            list_of_files.append(os.path.join(root,file))
+    return list_of_files
+
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
     and base64 encoded flags in given text.
@@ -56,18 +71,6 @@ def parse_for_flag(crib: str, text: str) -> list:
         exit(0)
     exit(1)
 
-def get_files_in_dir(path_to_directory: str) -> list
-    """Accepts a path to a directory and returns a list of filepaths
-    of every file in the directory.
-    """
-    
-    list_of_files = []
-    for root, dirs, files in os.walk(path_to_directory):
-        for file in files:
-            # append relative filepaths
-            list_of_files.append(os.path.join(root,file))
-    return list_of_files
-
 class Client:
     """A class to connect to a remote server"""
 
@@ -82,8 +85,6 @@ class Client:
 
         Dependencies:
         - pywebcopy
-        - GNU cat
-        - GNU find
         """
 
         # name the directory that source code will be saved to
@@ -100,12 +101,17 @@ class Client:
             bypass_robots=robots,
             **kwargs
         )
-        # concatenate all subfiles in website into one file to parse
         concat_filepath = os.path.join(folder, kwargs['project_name'] + '.txt')
         source_filepath = os.path.join(folder, kwargs['project_name'])
-        os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + >> {concat_filepath}")
+        # concatenate all subfiles in website into one file to parse
+        subfile_list = get_files_in_dir(source_filepath)
+        for subfile in subfile_list:
+            with open(subfile, 'rb') as subf:
+                text = subf.read().decode('utf-8','ignore')
+            with open(concat_filepath, 'a') as cfile:
+                cfile.write(text)
         # parse source for flag
         with open(concat_filepath, 'rb') as f:
-            text = f.read().decode('utf-8','ignore')
+            text = f.read()
             parse_for_flag(self.crib, text)
         return None
