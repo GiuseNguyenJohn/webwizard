@@ -88,8 +88,11 @@ class Client:
         """
 
         # name the directory that source code will be saved to
+        # TODO: increase time interval between requests to avoid triggering
+        #       DDOS protection (cloudflare)
         kwargs = {
             'project_name': f"source_{self.url.strip(r'http://').strip(r'https://')}",
+            # TODO: suppress unnecessary info messages to console
             'debug': False,
             'zip_project_folder': False,
             'over_write': False
