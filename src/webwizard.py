@@ -31,7 +31,7 @@ def parse_for_flag(crib: str, text: str) -> list:
         regex_string += ".{0,2}"
     # regex string will match flag with any padding of less than 2 characters
     # in between each flag character (above)
-    regex_string += "\\{.*?\\}"
+    regex_string += r"\{.*?\}"
     # Pattern of plaintext, rot13, and base64
     plaintext_pattern = re.compile(regex_string)
     rot13_pattern = re.compile(codecs.encode(regex_string, 'rot-13'))
@@ -63,8 +63,8 @@ class Client:
         self.url = url
         self.crib = crib
         pass
-    
-    def mirror_website(self, folder: str = './', robots: bool = True) -> int:
+
+    def mirror_website(self, folder: str = './', robots: bool = True) -> None:
         """Download entire website at Client object's URL and parse
         source code for flag
 
@@ -80,6 +80,8 @@ class Client:
         pywebcopy.save_website(
             url=self.url,
             project_folder=folder,
+            bypass_robots=robots,
+            debug=False,
             **kwargs
         )
         # concatenate all subfiles in website into one file to parse
@@ -87,5 +89,7 @@ class Client:
         source_filepath = os.path.join(folder, kwargs['project_name'])
         os.popen(f"find {source_filepath} -type f -name '*' -exec cat {{}} + >> {concat_filepath}")
         # parse source for flag
-        with open(f'{concat_filepath}') as f:
-            parse_for_flag(self.crib, f.read())
+        with open(concat_filepath, 'rb') as f:
+            text = f.read().decode('utf-8','ignore')
+            parse_for_flag(self.crib, text)
+        return None
