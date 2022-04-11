@@ -75,13 +75,17 @@ class Client:
         """
 
         # name the directory that source code will be saved to
-        kwargs = {'project_name': f"source_{self.url.strip(r'http://').strip(r'https://')}"}
+        kwargs = {
+            'project_name': f"source_{self.url.strip(r'http://').strip(r'https://')}",
+            'debug': False,
+            'zip_project_folder': False,
+            'over_write': False
+        }
         # download entire website
         pywebcopy.save_website(
             url=self.url,
             project_folder=folder,
             bypass_robots=robots,
-            debug=False,
             **kwargs
         )
         # concatenate all subfiles in website into one file to parse
