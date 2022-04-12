@@ -26,7 +26,7 @@ def get_files_in_dir(path_to_directory: str) -> list:
     return list_of_files
 
 def mirror(link: str, folder: str = './') -> None:
-    """Accepts URL and mirrors website in output file named "webwizard_output/"."""
+    """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
     # TODO: allow user to choose which dir to mirror website to
     # TODO: output to webwizard_output/
     css_files = []
