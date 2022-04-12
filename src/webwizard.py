@@ -36,7 +36,7 @@ def mirror(link: str, directory: str = './') -> None:
     # so properly ends with a newline
     r = requests.get(link)
     source_code = r.content + b"\n"
-    # create bs4 object
+    # set up HTML to be parsed for source files
     soup = bs4.BeautifulSoup(r.text, "html.parser")
     # find all '<link>' tags and use the path from the 'href'
     # attribute to find filepaths of css files
