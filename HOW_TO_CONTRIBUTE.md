@@ -4,15 +4,15 @@
 - Functions:
     - [x] parse text for flag -> list
 
-- [] Create class 'client' with parameters: URL, PORT=443 (default), FlAG_FORMAT
-    - [] \\_\\_init\\_\\_ should
-        - [] 
-        - [x] get 'robots.txt' and save output to file if response is 200 and not null
+- [] Create class 'client' with parameters: URL
+    - [x] \_\_init\_\_ should
+        - [x] save url
     - [] other methods: 
         - [x] mirror (download) entire website and parse for flag -> int
         - [] extract all comments from source code -> list
         - [] brute force directories -> TODO: add type hint 
         - [] check out cookies
+        - [x] parse robots.txt
 
 ## Ideas
 - make branch for Client method to download entire website source code and
