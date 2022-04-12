@@ -10,16 +10,12 @@ import base64
 import bs4
 import codecs
 import os
-import pywebcopy
 import re
 import requests
 
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
     of every file in the directory.
-
-    Dependencies:
-    - os
     """
     
     list_of_files = []
@@ -29,14 +25,74 @@ def get_files_in_dir(path_to_directory: str) -> list:
             list_of_files.append(os.path.join(root,file))
     return list_of_files
 
+def mirror(link: str, folder: str = './') -> None:
+    """Accepts URL and mirrors website in output file named "webwizard_output/"."""
+    # TODO: allow user to choose which dir to mirror website to
+    # TODO: output to webwizard_output/
+    css_files = []
+    image_files = []
+    script_files = []
+    all_files = []
+    
+    r = requests.get(link)
+    source_code = r.content + b"\n"
+
+    soup = bs4.BeautifulSoup(r.text, "html.parser")
+
+    for css_file in soup.find_all("link"):
+        if css_file.attrs.get("href"):
+            file_path = css_file.attrs.get("href")
+            if "http" not in file_path:
+                file_path = link + file_path
+                if file_path not in css_files:
+                    css_files.append(file_path)
+
+    for image in soup.find_all("img"):
+        if image.attrs.get("src"):
+            file_path = image.attrs.get("src")
+            if "http" not in file_path:
+                file_path = link + file_path
+                if file_path not in image_files:
+                    image_files.append(file_path)
+
+    for script in soup.find_all("script"):
+        if script.attrs.get("src"):
+            file_path = script.attrs.get("src")
+            if "http" not in file_path:
+                file_path = link + file_path
+                if file_path not in script_files:
+                    script_files.append(file_path)
+
+    all_files = css_files + image_files + script_files
+
+    with open("index.html", "wb") as index_file:
+        index_file.write(source_code)
+
+    for url in all_files:
+        path = url[len(link):].split("/")
+        # print(path)
+        if len(path) > 1:
+            pass
+            file_name = path[-1]
+            folders = path[:-1]
+            local_path = "/".join(folders)
+            # print(local_path)
+            if not os.path.isdir(local_path):
+                os.makedirs(local_path)
+            i = requests.get(url)
+            with open(f"{local_path}/{file_name}", "wb") as source_file:
+                source_file.write(i.content)
+        else:
+            # if not os.path.isdir("WW-folder"):
+            #     os.mkdir("WW-nofolder")
+            i = requests.get(url)
+            with open(path[0], "wb") as source_file:
+                source_file.write(i.content)
+    return None
+
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
     and base64 encoded flags in given text.
-
-    Dependencies:
-    - base64
-    - re
-    - codecs
     """
 
     crib = crib.strip("{")
@@ -74,40 +130,23 @@ def parse_for_flag(crib: str, text: str) -> list:
 class Client:
     """A class to connect to a remote server"""
 
-    def __init__(self, url: str, crib: str) -> None:
+    def __init__(self, url: str) -> None:
         self.url = url
-        self.crib = crib
-        pass
 
-    def mirror_website(self, folder: str = './', robots: bool = True) -> None:
+    def mirror_and_parse(self, crib: str, folder: str = './') -> None:
         """Download entire website at Client object's URL and parse
         source code for flag
-
-        Dependencies:
-        - pywebcopy
         """
 
-        # name the directory that source code will be saved to
-        # TODO: increase time interval between requests to avoid triggering
-        #       DDOS protection (cloudflare)
-        kwargs = {
-            'project_name': f"source_{self.url.strip(r'http://').strip(r'https://')}",
-            # TODO: suppress unnecessary info messages to console
-            'debug': False,
-            'zip_project_folder': False,
-            'over_write': False
-        }
-        # download entire website
-        pywebcopy.save_website(
-            url=self.url,
-            project_folder=folder,
-            bypass_robots=robots,
-            **kwargs
-        )
-        concat_filepath = os.path.join(folder, kwargs['project_name'] + '.txt')
-        source_filepath = os.path.join(folder, kwargs['project_name'])
-        # concatenate all subfiles in website into one file to parse
+        # mirror website locally
+        mirror(self.url, folder)
+        # define name of directory with mirrored files and file to 
+        # concatenate to
+        source_filepath = os.path.join(folder, 'webwizard_output/')
+        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
+        # get list of filepaths for each file
         subfile_list = get_files_in_dir(source_filepath)
+        # concatenate all subfiles in website into one file to parse
         for subfile in subfile_list:
             with open(subfile, 'rb') as subf:
                 text = subf.read().decode('utf-8','ignore')
@@ -116,5 +155,5 @@ class Client:
         # parse source for flag
         with open(concat_filepath) as f:
             text = f.read()
-            parse_for_flag(self.crib, text)
+            parse_for_flag(crib, text)
         return None
