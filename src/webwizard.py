@@ -52,7 +52,8 @@ def mirror(link: str, folder: str = './') -> None:
                 # elsewhere in the source code
                 if file_path not in css_files:
                     css_files.append(file_path)
-
+    # find all '<img>' tags and use the path from the 'src'
+    # attribute to find filepaths of image files
     for image in soup.find_all("img"):
         if image.attrs.get("src"):
             file_path = image.attrs.get("src")
@@ -60,7 +61,8 @@ def mirror(link: str, folder: str = './') -> None:
                 file_path = link + file_path
                 if file_path not in image_files:
                     image_files.append(file_path)
-
+    # find all '<script>' tags and use the path from the 'src'
+    # attribute to find filepaths of javascript files
     for script in soup.find_all("script"):
         if script.attrs.get("src"):
             file_path = script.attrs.get("src")
@@ -68,21 +70,20 @@ def mirror(link: str, folder: str = './') -> None:
                 file_path = link + file_path
                 if file_path not in script_files:
                     script_files.append(file_path)
-
+    # make a list of all the URLs to all the files to download
     all_files = css_files + image_files + script_files
-
+    # download 'index.html'
     with open("index.html", "wb") as index_file:
         index_file.write(source_code)
-
+    # 
     for url in all_files:
         path = url[len(link):].split("/")
-        # print(path)
+        # NOTE: John suggests instead of using 'pass', use the statement 'if ! (len(path) > 1)'
         if len(path) > 1:
             pass
             file_name = path[-1]
             folders = path[:-1]
             local_path = "/".join(folders)
-            # print(local_path)
             if not os.path.isdir(local_path):
                 os.makedirs(local_path)
             i = requests.get(url)
