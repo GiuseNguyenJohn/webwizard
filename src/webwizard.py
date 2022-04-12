@@ -74,7 +74,7 @@ class Client:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    def mirror(link: str, directory: str = './') -> None:
+    def mirror(self, link: str, directory: str = './') -> None:
     """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
 
     css_files = []
