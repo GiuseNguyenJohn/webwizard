@@ -20,7 +20,8 @@ def mirror(link):
     all_files = []
 
     r = requests.get(link)
-    
+    source_code = r.content + b"\n"
+
     soup = BeautifulSoup(r.text, "html.parser")
 
     for css_file in soup.find_all("link"):
@@ -41,7 +42,7 @@ def mirror(link):
 
     for script in soup.find_all("script"):
         if script.attrs.get("src"):
-            file_path = image.attrs.get("src")
+            file_path = script.attrs.get("src")
             if "http" not in file_path:
                 file_path = link + file_path
                 if file_path not in script_files:
@@ -61,19 +62,20 @@ def mirror(link):
     # for file in script_files:
     #     print(file)
 
-    print(all_files)
+    with open("index.html", "wb") as index_file:
+        index_file.write(source_code)
 
     for url in all_files:
         path = url[len(link):].split("/")
-        print(path)
+        # print(path)
         if len(path) > 1:
             pass
             file_name = path[-1]
             folders = path[:-1]
             local_path = "/".join(folders)
-            print(local_path)
+            # print(local_path)
             if not os.path.isdir(local_path):
-                os.makedirs(local_path) 
+                os.makedirs(local_path)
             i = requests.get(url)
             with open(f"{local_path}/{file_name}", "wb") as source_file:
                 source_file.write(i.content)
@@ -100,5 +102,7 @@ def crawl_robots(link):
     for path in disallowed:
         disallowed_link = link + path
         i = requests.get(disallowed_link)
-        print(i.)
-# Doesn't currently copy index page
+        print(f"--------Disallowed entry: {path}--------")
+        print(i.content.decode())
+        
+    return None
