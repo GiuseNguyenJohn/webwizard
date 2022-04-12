@@ -25,80 +25,6 @@ def get_files_in_dir(path_to_directory: str) -> list:
             list_of_files.append(os.path.join(root,file))
     return list_of_files
 
-def mirror(link: str, directory: str = './') -> None:
-    """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
-
-    css_files = []
-    image_files = []
-    script_files = []
-    all_files = []
-    # make a GET request to the website url, append \n 
-    # so properly ends with a newline
-    r = requests.get(link)
-    source_code = r.content + b"\n"
-    # set up HTML to be parsed for source files
-    soup = bs4.BeautifulSoup(r.text, "html.parser")
-    # find all '<link>' tags and use the path from the 'href'
-    # attribute to find filepaths of css files
-    for css_file in soup.find_all("link"):
-        if css_file.attrs.get("href"):
-            file_path = css_file.attrs.get("href")
-            # if 'file_path' is not a full URL yet, append the
-            # first part of the URL (the domain name)
-            if "http" not in file_path:
-                file_path = link + file_path
-                # check to see if css file was already referenced
-                # elsewhere in the source code
-                if file_path not in css_files:
-                    css_files.append(file_path)
-    # find all '<img>' tags and use the path from the 'src'
-    # attribute to find filepaths of image files
-    for image in soup.find_all("img"):
-        if image.attrs.get("src"):
-            file_path = image.attrs.get("src")
-            if "http" not in file_path:
-                file_path = link + file_path
-                if file_path not in image_files:
-                    image_files.append(file_path)
-    # find all '<script>' tags and use the path from the 'src'
-    # attribute to find filepaths of javascript files
-    for script in soup.find_all("script"):
-        if script.attrs.get("src"):
-            file_path = script.attrs.get("src")
-            if "http" not in file_path:
-                file_path = link + file_path
-                if file_path not in script_files:
-                    script_files.append(file_path)
-    # make a list of all the URLs to all the files to download
-    all_files = css_files + image_files + script_files
-    # make 'webwizard_output/' directory
-    webwizard_output_dir = os.path.join(directory, 'webwizard_output')
-    if not os.path.isdir(webwizard_output_dir):
-        os.mkdir(webwizard_output_dir)
-    # function to prepend 'webwizard_output_dir'
-    prepend_directory = lambda x: os.path.join(webwizard_output_dir, x)
-    # make directories that mirror website structure and download
-    # all files
-    for url in all_files:
-        path = url[len(link):].split("/")
-        if len(path) > 1:
-            file_name = path[-1]
-            folders = path[:-1]
-            local_path = prepend_directory('/'.join(folders))
-            if not os.path.isdir(local_path):
-                os.makedirs(local_path)
-            i = requests.get(url)
-            with open(f"{local_path}/{file_name}", "wb") as source_file:
-                source_file.write(i.content)
-        else:
-            i = requests.get(url)
-            with open(prepend_directory(path[0], "wb")) as source_file:
-                source_file.write(i.content)
-    # download 'index.html'
-    with open(prepend_directory("index.html"), "wb") as index_file:
-        index_file.write(source_code)
-    return None
-
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
     and base64 encoded flags in given text.
@@ -148,13 +74,85 @@ class Client:
     def __init__(self, url: str) -> None:
         self.url = url
 
+    def mirror(self, directory: str = './') -> None:
+        css_files = []
+        image_files = []
+        script_files = []
+        all_files = []
+        # make a GET request to the website url, append \n 
+        # so properly ends with a newline
+        r = requests.get(self.url)
+        source_code = r.content + b"\n"
+        # set up HTML to be parsed for source files
+        soup = bs4.BeautifulSoup(r.text, "html.parser")
+        # find all '<link>' tags and use the path from the 'href'
+        # attribute to find filepaths of css files
+        for css_file in soup.find_all("link"):
+            if css_file.attrs.get("href"):
+                file_path = css_file.attrs.get("href")
+                # if 'file_path' is not a full URL yet, append the
+                # first part of the URL (the domain name)
+                if "http" not in file_path:
+                    file_path = self.url + file_path
+                    # check to see if css file was already referenced
+                    # elsewhere in the source code
+                    if file_path not in css_files:
+                        css_files.append(file_path)
+        # find all '<img>' tags and use the path from the 'src'
+        # attribute to find filepaths of image files
+        for image in soup.find_all("img"):
+            if image.attrs.get("src"):
+                file_path = image.attrs.get("src")
+                if "http" not in file_path:
+                    file_path = self.url + file_path
+                    if file_path not in image_files:
+                        image_files.append(file_path)
+        # find all '<script>' tags and use the path from the 'src'
+        # attribute to find filepaths of javascript files
+        for script in soup.find_all("script"):
+            if script.attrs.get("src"):
+                file_path = script.attrs.get("src")
+                if "http" not in file_path:
+                    file_path = self.url + file_path
+                    if file_path not in script_files:
+                        script_files.append(file_path)
+        # make a list of all the URLs to all the files to download
+        all_files = css_files + image_files + script_files
+        # make 'webwizard_output/' directory
+        webwizard_output_dir = os.path.join(directory, 'webwizard_output')
+        if not os.path.isdir(webwizard_output_dir):
+            os.mkdir(webwizard_output_dir)
+        # function to prepend 'webwizard_output_dir'
+        prepend_directory = lambda x: os.path.join(webwizard_output_dir, x)
+        # make directories that mirror website structure and download
+        # all files
+        for url in all_files:
+            path = url[len(self.url):].split("/")
+            if len(path) > 1:
+                file_name = path[-1]
+                folders = path[:-1]
+                local_path = prepend_directory('/'.join(folders))
+                if not os.path.isdir(local_path):
+                    os.makedirs(local_path)
+                i = requests.get(url)
+                with open(f"{local_path}/{file_name}", "wb") as source_file:
+                    source_file.write(i.content)
+            else:
+                i = requests.get(url)
+                with open(prepend_directory(path[0], "wb")) as source_file:
+                    source_file.write(i.content)
+        # download 'index.html'
+        with open(prepend_directory("index.html"), "wb") as index_file:
+            index_file.write(source_code)
+        return None
+
     def mirror_and_parse(self, crib: str, folder: str = './') -> None:
         """Download entire website at Client object's URL and parse
         source code for flag
         """
 
         # mirror website locally
-        mirror(self.url, folder)
+        self.mirror(self.url, folder)
         # define name of directory with mirrored files and file to 
         # concatenate to
         source_filepath = os.path.join(folder, 'webwizard_output/')
