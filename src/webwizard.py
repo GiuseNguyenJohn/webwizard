@@ -206,14 +206,16 @@ class Client:
                     robots_info["comments"].append(line)
                 else:
                     entry = line.split(" ")
-                    if entry[0] == "User-agent:":
-                        robots_info["user-agent"].append(entry[1])
-                    elif entry[0] == "Disallow:":
-                        robots_info["disallow"].append(entry[1])
-                    elif entry[0] == "Allow:":
-                        robots_info["allow"].append(entry[1])
-                    elif entry[0] == "Sitemap:":
-                        robots_info["sitemap"].append(entry[1])
+                    # ignore empty entries
+                    if len(entry) != 1:
+                        if entry[0] == "User-agent:":
+                            robots_info["user-agent"].append(entry[1])
+                        elif entry[0] == "Disallow:":
+                            robots_info["disallow"].append(entry[1])
+                        elif entry[0] == "Allow:":
+                            robots_info["allow"].append(entry[1])
+                        elif entry[0] == "Sitemap:":
+                            robots_info["sitemap"].append(entry[1])
         # if the page doesn't exist
         else:
             # return empty dict
