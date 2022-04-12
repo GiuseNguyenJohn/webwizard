@@ -176,3 +176,41 @@ class Client:
             text = f.read()
             parse_for_flag(crib, text)
         return None
+
+    def crawl_robots(self) -> dict:
+        """Accesses robots.txt and if the page exists,
+         returns a dictionary with organized information."""
+
+        # TODO: someone else confirm that this output is OK.        
+        # create robots.txt link, make the request
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        if r.status_code == 200:
+            robots_info = {
+                "comments" : [],
+                "user-agent" : [],
+                "disallow" : [],
+                "allow" : [],
+                "sitemap" : []
+            }
+            # organize the information in robots.txt
+            robots = r.content.decode().split("\n")
+            for line in robots:
+                if "#" in line:
+                    robots_info["comments"].append(line)
+                else:
+                    entry = line.split(" ")
+                    if entry[0] == "User-agent:":
+                        robots_info["user-agent"].append(entry[1])
+                    elif entry[0] == "Disallow:":
+                        robots_info["disallow"].append(entry[1])
+                    elif entry[0] == "Allow:":
+                        robots_info["allow"].append(entry[1])
+                    elif entry[0] == "Sitemap:":
+                        robots_info["sitemap"].append(entry[1])
+        # if the page doesn't exist
+        else:
+            # return empty dict
+            robots_info = {}
+        return robots_info
