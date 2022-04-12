@@ -76,7 +76,7 @@ class Client:
 
     def mirror(self, link: str, directory: str = './') -> None:
         """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
-
+        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">) 
         css_files = []
         image_files = []
         script_files = []
@@ -176,6 +176,11 @@ class Client:
             text = f.read()
             parse_for_flag(crib, text)
         return None
+    
+    def extract_all_comments(self) -> list
+        """Return a list of all comments in the source code of the website
+        """
+        pass
 
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists,
@@ -214,3 +219,4 @@ class Client:
             # return empty dict
             robots_info = {}
         return robots_info
+
