@@ -177,7 +177,7 @@ class Client:
             parse_for_flag(crib, text)
         return None
     
-    def extract_all_comments(self) -> list
+    def extract_all_comments(self) -> list:
         """Return a list of all comments in the source code of the website
         """
         pass
