@@ -3,7 +3,7 @@
 A python module to aid and automate CTF web challenges.
 
 Authors: John (@Magicks52), David (@DavidTimothyNam)
-Tested: Python 3.9 on Kali Linux and Python _ on Ubuntu TODO: (David) fill in python and ubuntu version numbers
+Tested: Python 3.9 on Kali Linux and Python 3.9.5 on Ubuntu
 """
 
 import base64
@@ -32,8 +32,8 @@ def mirror(link: str, directory: str = './') -> None:
     image_files = []
     script_files = []
     all_files = []
-    # make a GET request to the website url, append \n to
-    # TODO: (David) mention why you're appending \n
+    # make a GET request to the website url, append \n 
+    # so properly ends with a newline
     r = requests.get(link)
     source_code = r.content + b"\n"
     # create bs4 object
@@ -82,8 +82,6 @@ def mirror(link: str, directory: str = './') -> None:
     for url in all_files:
         path = url[len(link):].split("/")
         if len(path) > 1:
-            # TODO: explain what the pass statement does
-            pass
             file_name = path[-1]
             folders = path[:-1]
             local_path = prepend_directory('/'.join(folders))
@@ -93,8 +91,6 @@ def mirror(link: str, directory: str = './') -> None:
             with open(f"{local_path}/{file_name}", "wb") as source_file:
                 source_file.write(i.content)
         else:
-            # if not os.path.isdir("WW-folder"):
-            #     os.mkdir("WW-nofolder")
             i = requests.get(url)
             with open(prepend_directory(path[0], "wb")) as source_file:
                 source_file.write(i.content)
