@@ -27,8 +27,7 @@ def get_files_in_dir(path_to_directory: str) -> list:
 
 def mirror(link: str, directory: str = './') -> None:
     """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
-    # TODO: allow user to choose which dir to mirror website to
-    # TODO: output to webwizard_output/
+
     css_files = []
     image_files = []
     script_files = []
@@ -131,9 +130,15 @@ def parse_for_flag(crib: str, text: str) -> list:
     if plaintext_flags:
         possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
     if rot13_flags:
-        possible_flags += ["rot13 flag: {}".format(codecs.decode(x, 'rot-13')) for x in rot13_flags]
+        possible_flags += [
+            "rot13 flag: {}".format(codecs.decode(x, 'rot-13')) for x in rot13_flags
+        ]
     if base64_flags:
-        possible_flags += ["base64 flag: {}".format(base64.b64decode(bytes(x, 'utf-8')).decode()) for x in base64_flags]
+        possible_flags += [
+            "base64 flag: {}".format(
+                base64.b64decode(bytes(x, 'utf-8')).decode()
+            ) for x in base64_flags
+        ]
     # print possible flags and exit
     if possible_flags:
         for flag in possible_flags:
