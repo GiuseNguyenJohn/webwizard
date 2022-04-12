@@ -4,11 +4,16 @@ import os
 import requests
 from bs4 import BeautifulSoup, Comment
 
-
+# Insp3ct0r
 # link = "https://jupiter.challenges.picoctf.org/problem/44924/"
-link_2 = "http://saturn.picoctf.net:64200/"
 
-def find_important_files(link):
+# Search source
+link_2 = "http://saturn.picoctf.net:50761/"
+
+# where are the robots
+link_3 = "https://jupiter.challenges.picoctf.org/problem/60915/"
+
+def mirror(link):
     css_files = []
     image_files = []
     script_files = []
@@ -56,17 +61,44 @@ def find_important_files(link):
     # for file in script_files:
     #     print(file)
 
-    return all_files
+    print(all_files)
 
+    for url in all_files:
+        path = url[len(link):].split("/")
+        print(path)
+        if len(path) > 1:
+            pass
+            file_name = path[-1]
+            folders = path[:-1]
+            local_path = "/".join(folders)
+            print(local_path)
+            if not os.path.isdir(local_path):
+                os.makedirs(local_path) 
+            i = requests.get(url)
+            with open(f"{local_path}/{file_name}", "wb") as source_file:
+                source_file.write(i.content)
+        else:
+            # if not os.path.isdir("WW-folder"):
+            #     os.mkdir("WW-nofolder")
+            i = requests.get(url)
+            with open(path[0], "wb") as source_file:
+                source_file.write(i.content)
+    return None
 
+def crawl_robots(link):
+    disallowed = []
 
-file_paths = find_important_files(link_2)
-# print(file_paths)
-for url in file_paths:
-    path = url[len(link_2):]
-    subfolders = path.split("/")
-    if not os.path.isdir(subfolders[0]): # doesn't account for multi-nested folders
-        os.mkdir(subfolders[0]) 
-    i = requests.get(url)
-    with open(path, "wb") as source_file:
-        source_file.write(i.content)
+    robots_link = link + "robots.txt"
+    # print(robots_link)
+    r = requests.get(robots_link)
+    robots = r.content.decode().split("\n")
+    for line in robots:
+        entry = line.split(" ")
+        if entry[0] == "Disallow:":
+            disallowed.append(entry[1])
+
+    for path in disallowed:
+        disallowed_link = link + path
+        i = requests.get(disallowed_link)
+        print(i.)
+# Doesn't currently copy index page
