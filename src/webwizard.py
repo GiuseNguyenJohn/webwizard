@@ -33,17 +33,23 @@ def mirror(link: str, folder: str = './') -> None:
     image_files = []
     script_files = []
     all_files = []
-    
+    # make a GET request to the website url, append \n to
+    # TODO: (David) mention why you're appending \n
     r = requests.get(link)
     source_code = r.content + b"\n"
-
+    # create bs4 object
     soup = bs4.BeautifulSoup(r.text, "html.parser")
-
+    # find all '<link>' tags and use the path from the 'href'
+    # attribute to find filepaths of css files
     for css_file in soup.find_all("link"):
         if css_file.attrs.get("href"):
             file_path = css_file.attrs.get("href")
+            # if 'file_path' is not a full URL yet, append the
+            # first part of the URL (the domain name)
             if "http" not in file_path:
                 file_path = link + file_path
+                # check to see if css file was already referenced
+                # elsewhere in the source code
                 if file_path not in css_files:
                     css_files.append(file_path)
 
