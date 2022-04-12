@@ -25,7 +25,7 @@ def get_files_in_dir(path_to_directory: str) -> list:
             list_of_files.append(os.path.join(root,file))
     return list_of_files
 
-def mirror(link: str, folder: str = './') -> None:
+def mirror(link: str, directory: str = './') -> None:
     """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
     # TODO: allow user to choose which dir to mirror website to
     # TODO: output to webwizard_output/
@@ -72,18 +72,22 @@ def mirror(link: str, folder: str = './') -> None:
                     script_files.append(file_path)
     # make a list of all the URLs to all the files to download
     all_files = css_files + image_files + script_files
-    # download 'index.html'
-    with open("index.html", "wb") as index_file:
-        index_file.write(source_code)
-    # 
+    # make 'webwizard_output/' directory
+    webwizard_output_dir = os.path.join(directory, 'webwizard_output')
+    if not os.path.isdir(webwizard_output_dir):
+        os.mkdir(webwizard_output_dir)
+    # function to prepend 'webwizard_output_dir'
+    prepend_directory = lambda x: os.path.join(webwizard_output_dir, x)
+    # make directories that mirror website structure and download
+    # all files
     for url in all_files:
         path = url[len(link):].split("/")
-        # NOTE: John suggests instead of using 'pass', use the statement 'if ! (len(path) > 1)'
         if len(path) > 1:
+            # TODO: explain what the pass statement does
             pass
             file_name = path[-1]
             folders = path[:-1]
-            local_path = "/".join(folders)
+            local_path = prepend_directory('/'.join(folders))
             if not os.path.isdir(local_path):
                 os.makedirs(local_path)
             i = requests.get(url)
@@ -93,8 +97,11 @@ def mirror(link: str, folder: str = './') -> None:
             # if not os.path.isdir("WW-folder"):
             #     os.mkdir("WW-nofolder")
             i = requests.get(url)
-            with open(path[0], "wb") as source_file:
+            with open(prepend_directory(path[0], "wb")) as source_file:
                 source_file.write(i.content)
+    # download 'index.html'
+    with open(prepend_directory("index.html"), "wb") as index_file:
+        index_file.write(source_code)
     return None
 
 def parse_for_flag(crib: str, text: str) -> list:
