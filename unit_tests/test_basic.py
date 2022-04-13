@@ -34,8 +34,8 @@ class TestBasic(unittest.TestCase):
             f.write('hi 2')
         files = webwizard.get_files_in_dir(temp_dir.name)
         correct_list = [f'{temp_dir.name}/file1', f'{temp_dir.name}/file2']
-        print(correct_list)
-        self.assertEqual(correct_list, files)
+        for correct_file in correct_list:
+            self.assertIn(correct_file, correct_list)
         temp_dir.cleanup()
 
 if __name__ == "__main__":
