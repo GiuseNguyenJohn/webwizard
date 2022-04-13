@@ -13,8 +13,8 @@ import os
 import re
 import requests
 
-def extract_comments(source_code):
-    """Takes concat file and parses comments <in progress>"""
+def extract_comments(source_code: str) -> list:
+    """Accepts source code of a website as a string and parses comments"""
     # TODO: someone please test code here; has been rearranged
     
     all_comments = []
