@@ -13,6 +13,11 @@ import os
 import re
 import requests
 
+def extract_comments(html):
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    comments = soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
+    return comments
+
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
     of every file in the directory.
@@ -228,35 +233,5 @@ class Client:
         return concat_filepath
     
     def extract_all_comments(self) -> list:
-        """Return a list of all comments in the source code of the website
-        """
+        """Return a list of all comments in the source code of the website"""
         pass
-    
-    
-    # DON"T WORRY ABOUT IT
-    
-from bs4 import BeautifulSoup
-from bs4 import Comment 
-
-
-def extract_comments(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    comments = soup.findAll(text=lambda text: isinstance(text, Comment))
-    return comments
-
-source = """ <body>
-   <!-- Branding and main navigation -->
-   <div class="Branding">The Science &amp; Safety Behind Your Favorite Products</div>
-   <div class="l-branding">
-      <p>Just a brand</p>
-   </div>
-   <!-- test comment here -->
-   <div class="block_content">
-      <a href="https://www.google.com">Google</a>
-   </div>
-</body>"""
-
-print(extract_comments(source))
-
-
-

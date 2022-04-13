@@ -2,16 +2,16 @@
 
 ## Master List of Tasks
 - Functions:
-    - [x] parse text for flag -> list
+    - [x] parse text for flag -> list (JOHN)
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
         - [x] save url
     - [] other methods: 
-        - [x] mirror (download) entire website and parse for flag -> int
-        - [] extract all comments from source code -> list
-        - [] check out cookies
-        - [x] parse robots.txt
+        - [x] mirror (download) entire website and parse for flag -> int (DAVID)
+        - [] extract all comments from source code -> list (ARYA)
+        - [] check out cookies (JOHN)
+        - [x] parse robots.txt (DAVID)
 
 ## Ideas
 - make branch for Client method to download entire website source code and
