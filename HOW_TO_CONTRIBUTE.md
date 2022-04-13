@@ -10,7 +10,6 @@
     - [] other methods: 
         - [x] mirror (download) entire website and parse for flag -> int
         - [] extract all comments from source code -> list
-        - [] brute force directories -> TODO: add type hint 
         - [] check out cookies
         - [x] parse robots.txt
 
