@@ -102,6 +102,27 @@ class Client:
         # if the page actualy exists
         return r.status_code == 200
 
+    def concat_files(self, folder: str = './') -> None:
+        """Download entire website at Client object's URL and parse
+        source code for flag
+        """
+
+        # mirror website locally
+        self.mirror(self.url, folder)
+        # define name of directory with mirrored files and file to
+        # concatenate to
+        source_filepath = os.path.join(folder, 'webwizard_output/')
+        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
+        # get list of filepaths for each file
+        subfile_list = get_files_in_dir(source_filepath)
+        # concatenate all subfiles in website into one file to parse
+        for subfile in subfile_list:
+            with open(subfile, 'rb') as subf:
+                text = subf.read().decode('utf-8','ignore')
+            with open(concat_filepath, 'a') as cfile:
+                cfile.write(text)
+        return concat_filepath
+
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists,
          returns a dictionary with organized information."""
@@ -140,6 +161,13 @@ class Client:
             robots_info = {}
         return robots_info
 
+    def extract_comments_from_file(self, file_path) -> list:
+        """Return a list of all comments in the source code of the website"""
+
+        with open(file_path) as f:
+            comments = extract_comments(f.read())
+        return comments
+        
     def get_remote_files(self, link: str) -> list:
         """Parse file at the specified link for other remote files,
         return a list of URLs to remote files"""        
@@ -229,34 +257,6 @@ class Client:
             index_file.write(source_code)
         return None
 
-    def concat_files(self, folder: str = './') -> None:
-        """Download entire website at Client object's URL and parse
-        source code for flag
-        """
-
-        # mirror website locally
-        self.mirror(self.url, folder)
-        # define name of directory with mirrored files and file to
-        # concatenate to
-        source_filepath = os.path.join(folder, 'webwizard_output/')
-        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
-        # get list of filepaths for each file
-        subfile_list = get_files_in_dir(source_filepath)
-        # concatenate all subfiles in website into one file to parse
-        for subfile in subfile_list:
-            with open(subfile, 'rb') as subf:
-                text = subf.read().decode('utf-8','ignore')
-            with open(concat_filepath, 'a') as cfile:
-                cfile.write(text)
-        return concat_filepath
-
-    def extract_comments_from_file(self, file_path) -> list:
-        """Return a list of all comments in the source code of the website"""
-
-        with open(file_path) as f:
-            comments = extract_comments(f.read())
-        return comments
-    
     def get_cookies(self, url: str) -> list:
         """"""
 
