@@ -141,8 +141,9 @@ class Client:
             robots_info = {}
         return robots_info
 
-    def mirror(self, link: str, directory: str = './') -> None:
-        """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
+    def get_remote_files(self, link: str) -> list:
+        """Parse file at the specified link for other remote files,
+        return a list of URLs to remote files"""        
         # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
@@ -187,6 +188,12 @@ class Client:
                         script_files.append(file_path)
         # make a list of all the URLs to all the files to download
         all_files = css_files + image_files + script_files
+        return all_files
+
+    def mirror(self, link: str, directory: str = './') -> None:
+        """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
+        # get a list of all remote files to mirror
+        all_files = get_remote_files(link)
         # make 'webwizard_output/' directory
         webwizard_output_dir = os.path.join(directory, 'webwizard_output')
         if not os.path.isdir(webwizard_output_dir):
@@ -246,3 +253,8 @@ class Client:
         with open(file_path) as f:
             comments = extract_comments(f.read())
         return comments
+    
+    def get_cookies(self, url: str) -> list:
+        """"""
+
+        pass
