@@ -23,7 +23,7 @@ def extract_comments(source_code):
     # get html comments
     all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
     # get php, css, js, comments /* */ 
-    all_comments += re.findall(b"/\*.*\*/", source_code)
+    all_comments += re.findall(r"/\*.+?\*/", source_code)
     return all_comments
 
 def get_files_in_dir(path_to_directory: str) -> list:
