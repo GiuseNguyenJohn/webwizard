@@ -15,8 +15,7 @@ import requests
 
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments"""
-    # TODO: someone please test code here; has been rearranged
-
+    
     all_comments = []
     # set up html to be parsed, find html comments
     soup = bs4.BeautifulSoup(source_code, 'html.parser')
@@ -193,7 +192,7 @@ class Client:
     def mirror(self, link: str, directory: str = './') -> None:
         """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
         # get a list of all remote files to mirror
-        all_files = get_remote_files(link)
+        all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
         webwizard_output_dir = os.path.join(directory, 'webwizard_output')
         if not os.path.isdir(webwizard_output_dir):
@@ -223,6 +222,10 @@ class Client:
                     source_file.write(i.content)
         # download 'index.html'
         with open(prepend_directory("index.html"), "wb") as index_file:
+            # make a GET request to the website url, append \n
+            # so properly ends with a newline
+            r = requests.get(link)
+            source_code = r.content + b"\n"
             index_file.write(source_code)
         return None
 
