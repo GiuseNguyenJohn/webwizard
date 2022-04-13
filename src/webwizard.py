@@ -212,7 +212,7 @@ class Client:
                 # if the file being requested is at the root of the website,
                 # write it directly to 'webwizard_output/'
                 i = requests.get(url)
-                with open(prepend_directory(path[0], "wb")) as source_file:
+                with open(prepend_directory(path[0]), "wb") as source_file:
                     source_file.write(i.content)
         # download 'index.html'
         with open(prepend_directory("index.html"), "wb") as index_file:
