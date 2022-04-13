@@ -13,10 +13,18 @@ import os
 import re
 import requests
 
-def extract_comments(html):
-    soup = bs4.BeautifulSoup(html, 'html.parser')
-    comments = soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
-    return comments
+def extract_comments(source_code):
+    """Takes concat file and parses comments <in progress>"""
+    # TODO: someone please test code here; has been rearranged
+    
+    all_comments = []
+    # set up html to be parsed, find html comments
+    soup = bs4.BeautifulSoup(source_code, 'html.parser')
+    # get html comments
+    all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
+    # get php, css, js, comments /* */ 
+    all_comments += re.findall(b"/\*.*\*/", source_code)
+    return all_comments
 
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
@@ -236,64 +244,3 @@ class Client:
         """Return a list of all comments in the source code of the website"""
         pass
     
-    
-    # DON"T WORRY ABOUT IT
-    
-from bs4 import BeautifulSoup
-from bs4 import Comment 
-
-
-def extract_comments(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    comments = soup.findAll(text=lambda text: isinstance(text, Comment))
-    return comments
-
-source = """ <body>
-   <!-- Branding and main navigation -->
-   <div class="Branding">The Science &amp; Safety Behind Your Favorite Products</div>
-   <div class="l-branding">
-      <p>Just a brand</p>
-   </div>
-   <!-- test comment here -->
-   <div class="block_content">
-      <a href="https://www.google.com">Google</a>
-   </div>
-</body>"""
-
-print(extract_comments(source))
-
-
-# ----------------------------------------------------------------------------------------------------------------------------- #
-
-# PHP, JAVA, -  "#"
-
-
-from bs4 import BeautifulSoup
-from bs4 import Comment 
-import re
-
-
-def extract_comments(source_code):
-    soup = BeautifulSoup(source_code, 'html.parser')
-    html_comments = soup.findAll(text=lambda text: isinstance(text, Comment))
-    other_comments = re.findall(b"/\*.*\*/", source_code)
-    
-    
-    
-    return html_comments + other_comments
-
-
-
-with open("source_code.txt", "rb") as f:
-    source = f.read()
-  
-  
-test = source.split(b"\n")
-for a in test:
-    a = a.strip()
-    if a[:2] == b"//":
-       print(a)
-       
-
-# print(extract_comments(source))
-
