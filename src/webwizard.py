@@ -2,7 +2,7 @@
 """
 A python module to aid and automate CTF web challenges.
 
-Authors: John (@Magicks52), David (@DavidTimothyNam)
+Authors: John (@Magicks52), David (@DavidTimothyNam), Arya @AryaGill
 Tested: Python 3.10.4 on Kali Linux and Python 3.9.5 on Ubuntu
 """
 
