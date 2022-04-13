@@ -25,6 +25,13 @@ def get_files_in_dir(path_to_directory: str) -> list:
             list_of_files.append(os.path.join(root,file))
     return list_of_files
 
+def parse_file_for_flag(crib: str, file_path: str) -> None:
+    """Parses file for crib. Assumes file has valid utf-8 bytes."""
+
+    with open(file_path) as file_to_parse:
+        parse_for_flag(crib, file_path.read())
+    return 0
+
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
     and base64 encoded flags in given text.
@@ -65,8 +72,8 @@ def parse_for_flag(crib: str, text: str) -> list:
     if possible_flags:
         for flag in possible_flags:
             print(flag)
-        exit(0)
-    exit(1)
+        return 0
+    return 1
 
 class Client:
     """A class to connect to a remote server"""
@@ -74,6 +81,53 @@ class Client:
     def __init__(self, url: str) -> None:
         self.url = url
 
+    def check_robots(self) -> bool:
+        """Makes a GET request to robots.txt and returns True
+        if http response is 200, and False if anything else."""
+
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        return r.status_code == 200
+
+    def crawl_robots(self) -> dict:
+        """Accesses robots.txt and if the page exists,
+         returns a dictionary with organized information."""
+
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        if r.status_code == 200:
+            robots_info = {
+                "comments" : [],
+                "user-agent" : [],
+                "disallow" : [],
+                "allow" : [],
+                "sitemap" : []
+            }
+            # organize the information in robots.txt
+            robots = r.content.decode().split("\n")
+            for line in robots:
+                if "#" in line:
+                    robots_info["comments"].append(line)
+                else:
+                    entry = line.split(" ")
+                    # ignore empty entries
+                    if len(entry) != 1:
+                        if entry[0] == "User-agent:":
+                            robots_info["user-agent"].append(entry[1])
+                        elif entry[0] == "Disallow:":
+                            robots_info["disallow"].append(entry[1])
+                        elif entry[0] == "Allow:":
+                            robots_info["allow"].append(entry[1])
+                        elif entry[0] == "Sitemap:":
+                            robots_info["sitemap"].append(entry[1])
+        # if the page doesn't exist
+        else:
+            # return empty dict
+            robots_info = {}
+        return robots_info
+        
     def mirror(self, link: str, directory: str = './') -> None:
         """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
         # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">) 
@@ -152,7 +206,7 @@ class Client:
             index_file.write(source_code)
         return None
 
-    def mirror_and_parse(self, crib: str, folder: str = './') -> None:
+    def concat_files(self, folder: str = './') -> None:
         """Download entire website at Client object's URL and parse
         source code for flag
         """
@@ -171,59 +225,9 @@ class Client:
                 text = subf.read().decode('utf-8','ignore')
             with open(concat_filepath, 'a') as cfile:
                 cfile.write(text)
-        # parse source for flag
-        with open(concat_filepath) as f:
-            text = f.read()
-            parse_for_flag(crib, text)
-        return None
+        return concat_filepath
     
     def extract_all_comments(self) -> list:
         """Return a list of all comments in the source code of the website
         """
         pass
-
-    def crawl_robots(self) -> dict:
-        """Accesses robots.txt and if the page exists,
-         returns a dictionary with organized information."""
-
-        # TODO: someone else confirm that this output is OK.        
-        # create robots.txt link, make the request
-        robots_link = self.url + "robots.txt"
-        r = requests.get(robots_link)
-        # if the page actualy exists
-        if r.status_code == 200:
-            robots_info = {
-                "comments" : [],
-                "user-agent" : [],
-                "disallow" : [],
-                "allow" : [],
-                "sitemap" : []
-            }
-            # organize the information in robots.txt
-            robots = r.content.decode().split("\n")
-            for line in robots:
-                if "#" in line:
-                    robots_info["comments"].append(line)
-                else:
-                    entry = line.split(" ")
-                    # ignore empty entries
-                    if len(entry) != 1:
-                        if entry[0] == "User-agent:":
-                            robots_info["user-agent"].append(entry[1])
-                        elif entry[0] == "Disallow:":
-                            robots_info["disallow"].append(entry[1])
-                        elif entry[0] == "Allow:":
-                            robots_info["allow"].append(entry[1])
-                        elif entry[0] == "Sitemap:":
-                            robots_info["sitemap"].append(entry[1])
-        # if the page doesn't exist
-        else:
-            # return empty dict
-            robots_info = {}
-        return robots_info
-
-    def check_robots(self) -> bool:
-        robots_link = self.url + "robots.txt"
-        r = requests.get(robots_link)
-        # if the page actualy exists
-        return r.status_code == 200
