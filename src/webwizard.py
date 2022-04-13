@@ -2,7 +2,7 @@
 """
 A python module to aid and automate CTF web challenges.
 
-Authors: John (@Magicks52), David (@DavidTimothyNam)
+Authors: John (@Magicks52), David (@DavidTimothyNam), Arya (@AryaGill)
 Tested: Python 3.10.4 on Kali Linux and Python 3.9.5 on Ubuntu
 """
 
@@ -12,6 +12,18 @@ import codecs
 import os
 import re
 import requests
+
+def extract_comments(source_code: str) -> list:
+    """Accepts source code of a website as a string and parses comments"""
+    
+    all_comments = []
+    # set up html to be parsed, find html comments
+    soup = bs4.BeautifulSoup(source_code, 'html.parser')
+    # get html comments
+    all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
+    # get php, css, js, comments /* */
+    all_comments += re.findall(r"/\*.+?\*/", source_code)
+    return all_comments
 
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
@@ -24,6 +36,13 @@ def get_files_in_dir(path_to_directory: str) -> list:
             # append relative filepaths
             list_of_files.append(os.path.join(root,file))
     return list_of_files
+
+def parse_file_for_flag(crib: str, file_path: str) -> None:
+    """Parses file for crib. Assumes file has valid utf-8 bytes."""
+
+    with open(file_path) as file_to_parse:
+        parse_for_flag(crib, file_path.read())
+    return 0
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
@@ -65,8 +84,8 @@ def parse_for_flag(crib: str, text: str) -> list:
     if possible_flags:
         for flag in possible_flags:
             print(flag)
-        exit(0)
-    exit(1)
+        return 0
+    return 1
 
 class Client:
     """A class to connect to a remote server"""
@@ -74,9 +93,85 @@ class Client:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    def mirror(self, link: str, directory: str = './') -> None:
-        """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
-        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">) 
+    def check_robots(self) -> bool:
+        """Makes a GET request to robots.txt and returns True
+        if http response is 200, and False if anything else."""
+
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        return r.status_code == 200
+
+    def concat_files(self, folder: str = './') -> None:
+        """Download entire website at Client object's URL and parse
+        source code for flag
+        """
+
+        # mirror website locally
+        self.mirror(self.url, folder)
+        # define name of directory with mirrored files and file to
+        # concatenate to
+        source_filepath = os.path.join(folder, 'webwizard_output/')
+        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
+        # get list of filepaths for each file
+        subfile_list = get_files_in_dir(source_filepath)
+        # concatenate all subfiles in website into one file to parse
+        for subfile in subfile_list:
+            with open(subfile, 'rb') as subf:
+                text = subf.read().decode('utf-8','ignore')
+            with open(concat_filepath, 'a') as cfile:
+                cfile.write(text)
+        return concat_filepath
+
+    def crawl_robots(self) -> dict:
+        """Accesses robots.txt and if the page exists,
+         returns a dictionary with organized information."""
+
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        if r.status_code == 200:
+            robots_info = {
+                "comments" : [],
+                "user-agent" : [],
+                "disallow" : [],
+                "allow" : [],
+                "sitemap" : []
+            }
+            # organize the information in robots.txt
+            robots = r.content.decode().split("\n")
+            for line in robots:
+                if "#" in line:
+                    robots_info["comments"].append(line)
+                else:
+                    entry = line.split(" ")
+                    # ignore empty entries
+                    if len(entry) != 1:
+                        if entry[0] == "User-agent:":
+                            robots_info["user-agent"].append(entry[1])
+                        elif entry[0] == "Disallow:":
+                            robots_info["disallow"].append(entry[1])
+                        elif entry[0] == "Allow:":
+                            robots_info["allow"].append(entry[1])
+                        elif entry[0] == "Sitemap:":
+                            robots_info["sitemap"].append(entry[1])
+        # if the page doesn't exist
+        else:
+            # return empty dict
+            robots_info = {}
+        return robots_info
+
+    def extract_comments_from_file(self, file_path) -> list:
+        """Return a list of all comments in the source code of the website"""
+
+        with open(file_path) as f:
+            comments = extract_comments(f.read())
+        return comments
+        
+    def get_remote_files(self, link: str) -> list:
+        """Parse file at the specified link for other remote files,
+        return a list of URLs to remote files"""        
+        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
         script_files = []
@@ -120,6 +215,12 @@ class Client:
                         script_files.append(file_path)
         # make a list of all the URLs to all the files to download
         all_files = css_files + image_files + script_files
+        return all_files
+
+    def mirror(self, link: str, directory: str = './') -> None:
+        """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
+        # get a list of all remote files to mirror
+        all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
         webwizard_output_dir = os.path.join(directory, 'webwizard_output')
         if not os.path.isdir(webwizard_output_dir):
@@ -145,80 +246,18 @@ class Client:
                 # if the file being requested is at the root of the website,
                 # write it directly to 'webwizard_output/'
                 i = requests.get(url)
-                with open(prepend_directory(path[0], "wb")) as source_file:
+                with open(prepend_directory(path[0]), "wb") as source_file:
                     source_file.write(i.content)
         # download 'index.html'
         with open(prepend_directory("index.html"), "wb") as index_file:
+            # make a GET request to the website url, append \n
+            # so properly ends with a newline
+            r = requests.get(link)
+            source_code = r.content + b"\n"
             index_file.write(source_code)
         return None
 
-    def mirror_and_parse(self, crib: str, folder: str = './') -> None:
-        """Download entire website at Client object's URL and parse
-        source code for flag
-        """
+    def get_cookies(self, url: str) -> list:
+        """"""
 
-        # mirror website locally
-        self.mirror(self.url, folder)
-        # define name of directory with mirrored files and file to
-        # concatenate to
-        source_filepath = os.path.join(folder, 'webwizard_output/')
-        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
-        # get list of filepaths for each file
-        subfile_list = get_files_in_dir(source_filepath)
-        # concatenate all subfiles in website into one file to parse
-        for subfile in subfile_list:
-            with open(subfile, 'rb') as subf:
-                text = subf.read().decode('utf-8','ignore')
-            with open(concat_filepath, 'a') as cfile:
-                cfile.write(text)
-        # parse source for flag
-        with open(concat_filepath) as f:
-            text = f.read()
-            parse_for_flag(crib, text)
-        return None
-    
-    def extract_all_comments(self) -> list:
-        """Return a list of all comments in the source code of the website
-        """
         pass
-
-    def crawl_robots(self) -> dict:
-        """Accesses robots.txt and if the page exists,
-         returns a dictionary with organized information."""
-
-        # TODO: someone else confirm that this output is OK.        
-        # create robots.txt link, make the request
-        robots_link = self.url + "robots.txt"
-        r = requests.get(robots_link)
-        # if the page actualy exists
-        if r.status_code == 200:
-            robots_info = {
-                "comments" : [],
-                "user-agent" : [],
-                "disallow" : [],
-                "allow" : [],
-                "sitemap" : []
-            }
-            # organize the information in robots.txt
-            robots = r.content.decode().split("\n")
-            for line in robots:
-                if "#" in line:
-                    robots_info["comments"].append(line)
-                else:
-                    entry = line.split(" ")
-                    # ignore empty entries
-                    if len(entry) != 1:
-                        if entry[0] == "User-agent:":
-                            robots_info["user-agent"].append(entry[1])
-                        elif entry[0] == "Disallow:":
-                            robots_info["disallow"].append(entry[1])
-                        elif entry[0] == "Allow:":
-                            robots_info["allow"].append(entry[1])
-                        elif entry[0] == "Sitemap:":
-                            robots_info["sitemap"].append(entry[1])
-        # if the page doesn't exist
-        else:
-            # return empty dict
-            robots_info = {}
-        return robots_info
-
