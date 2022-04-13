@@ -2,7 +2,7 @@
 """
 A python module to aid and automate CTF web challenges.
 
-Authors: John (@Magicks52), David (@DavidTimothyNam), Arya @AryaGill
+Authors: John (@Magicks52), David (@DavidTimothyNam), Arya (@AryaGill)
 Tested: Python 3.10.4 on Kali Linux and Python 3.9.5 on Ubuntu
 """
 
@@ -222,3 +222,8 @@ class Client:
             robots_info = {}
         return robots_info
 
+    def check_robots(self) -> bool:
+        robots_link = self.url + "robots.txt"
+        r = requests.get(robots_link)
+        # if the page actualy exists
+        return r.status_code == 200
