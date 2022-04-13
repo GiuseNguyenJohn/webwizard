@@ -16,13 +16,13 @@ import requests
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments"""
     # TODO: someone please test code here; has been rearranged
-    
+
     all_comments = []
     # set up html to be parsed, find html comments
     soup = bs4.BeautifulSoup(source_code, 'html.parser')
     # get html comments
     all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
-    # get php, css, js, comments /* */ 
+    # get php, css, js, comments /* */
     all_comments += re.findall(r"/\*.+?\*/", source_code)
     return all_comments
 
@@ -140,10 +140,10 @@ class Client:
             # return empty dict
             robots_info = {}
         return robots_info
-        
+
     def mirror(self, link: str, directory: str = './') -> None:
         """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
-        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">) 
+        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
         script_files = []
@@ -239,8 +239,10 @@ class Client:
             with open(concat_filepath, 'a') as cfile:
                 cfile.write(text)
         return concat_filepath
-    
-    def extract_all_comments(self) -> list:
+
+    def extract_comments_from_file(self, file_path) -> list:
         """Return a list of all comments in the source code of the website"""
-        pass
-    
+
+        with open(file_path) as f:
+            comments = extract_comments(f.read())
+        return comments
