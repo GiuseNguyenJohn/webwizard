@@ -255,7 +255,7 @@ class Client:
             index_file.write(source_code)
         return None
 
-    def get_cookies_from_url(self) -> list:
+    def get_cookies_from_url(self) -> dict:
         """Accepts a URL and gets any cookies sent from the server
         from that URL. Returns a dictionary of all cookies received."""
 

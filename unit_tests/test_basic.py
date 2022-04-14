@@ -38,5 +38,15 @@ class TestBasic(unittest.TestCase):
             self.assertIn(correct_file, files)
         temp_dir.cleanup()
 
+    def test_extract_comments(self):
+        """Will HTML, CSS, and Javascript comments be detected?"""
+
+        text = """
+        AAA <!-- html comment --> BBB
+        CCC /* css comment */ DDD
+        EEE // javascript comment
+        """
+        
+
 if __name__ == "__main__":
     unittest.main()
