@@ -168,6 +168,17 @@ class Client:
         with open(file_path) as f:
             comments = extract_comments(f.read())
         return comments
+    
+    def get_cookies_from_url(self) -> dict:
+        """Accepts a URL and gets any cookies sent from the server
+        from that URL. Returns a dictionary of all cookies received."""
+
+        session = requests.Session()
+        response = session.get(self.url)
+        return session.cookies.get_dict()
+    
+    def get_all_cookies(self) -> dict:
+        pass
         
     def get_remote_files(self, link: str) -> list:
         """Parse file at the specified link for other remote files,
@@ -256,14 +267,3 @@ class Client:
             source_code = r.content + b"\n"
             index_file.write(source_code)
         return None
-
-    def get_cookies_from_url(self) -> dict:
-        """Accepts a URL and gets any cookies sent from the server
-        from that URL. Returns a dictionary of all cookies received."""
-
-        session = requests.Session()
-        response = session.get(self.url)
-        return session.cookies.get_dict()
-    
-    def get_all_cookies(self) -> dict:
-        pass

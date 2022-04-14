@@ -4,19 +4,18 @@
 - Functions:
     - [x] parse_for_flag -> list (UNIT TEST)
     - [x] get_files_in_dir -> list (UNIT TEST)
-    - [x] extract_comments -> list 
+    - [x] extract_comments -> list (UNIT TEST)
     - [x] parse_file_for_flag -> list
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
         - [x] save url
     - [] other methods: 
-        - [x] mirror (download) entire website and parse for flag -> int
-        - [] extract all comments from source code -> list
-        - [] brute force directories -> TODO: add type hint 
-        - [] check out cookies
-        - [x] parse robots.txt
-
+        - [x] check_robots
+        - [x]  -> list
+        - [x] get_cookies
+        - [x] check_robots -> bool
+        - []
 ## Ideas
 - attack login pages
     - sql inject
