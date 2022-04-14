@@ -6,7 +6,6 @@
     - [x] get_files_in_dir -> list (UNIT TEST)
     - [x] extract_comments -> list 
     - [x] parse_file_for_flag -> list
-    - [x] 
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
@@ -19,10 +18,6 @@
         - [x] parse robots.txt
 
 ## Ideas
-- make branch for Client method to download entire website source code and
-    parse for flag (no linux binaries allowed, python only), try using
-    this: https://pypi.org/project/pywebcopy/
-    
 - attack login pages
     - sql inject
     - command inject
