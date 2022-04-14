@@ -50,5 +50,9 @@ class TestBasic(unittest.TestCase):
         for correct_comment in correct_comments:
             self.assertIn(correct_comment, comments)
 
+    def test_parse_file_for_flag(self):
+        """Will function return ?"""
+        pass
+
 if __name__ == "__main__":
     unittest.main()
