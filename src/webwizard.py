@@ -84,8 +84,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     if possible_flags:
         for flag in possible_flags:
             print(flag)
-        return 0
-    return 1
+    return possible_flags
 
 class Client:
     """A class to connect to a remote server"""
