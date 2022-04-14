@@ -178,7 +178,6 @@ class Client:
         # make a GET request to the website url, append \n
         # so properly ends with a newline
         r = requests.get(link)
-        source_code = r.content + b"\n"
         # set up HTML to be parsed for source files
         soup = bs4.BeautifulSoup(r.text, "html.parser")
         # find all '<link>' tags and use the path from the 'href'
