@@ -37,12 +37,12 @@ def get_files_in_dir(path_to_directory: str) -> list:
             list_of_files.append(os.path.join(root,file))
     return list_of_files
 
-def parse_file_for_flag(crib: str, file_path: str) -> None:
+def parse_file_for_flag(crib: str, file_path: str) -> list:
     """Parses file for crib. Assumes file has valid utf-8 bytes."""
 
-    with open(file_path) as file_to_parse:
-        parse_for_flag(crib, file_path.read())
-    return 0
+    with open(file_path):
+        flags = parse_for_flag(crib, file_path.read())
+    return flags
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,

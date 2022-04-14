@@ -35,7 +35,7 @@ class TestBasic(unittest.TestCase):
         files = webwizard.get_files_in_dir(temp_dir.name)
         correct_list = [f'{temp_dir.name}/file1', f'{temp_dir.name}/file2']
         for correct_file in correct_list:
-            self.assertIn(correct_file, correct_list)
+            self.assertIn(correct_file, files)
         temp_dir.cleanup()
 
 if __name__ == "__main__":

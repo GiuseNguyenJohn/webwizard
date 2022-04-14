@@ -2,7 +2,11 @@
 
 ## Master List of Tasks
 - Functions:
-    - [x] parse text for flag -> list
+    - [x] parse_for_flag -> list (UNIT TEST)
+    - [x] get_files_in_dir -> list (UNIT TEST)
+    - [x] extract_comments -> list 
+    - [x] parse_file_for_flag -> list
+    - [x] 
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
