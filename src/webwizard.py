@@ -21,8 +21,9 @@ def extract_comments(source_code: str) -> list:
     soup = bs4.BeautifulSoup(source_code, 'html.parser')
     # get html comments
     all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
-    # get php, css, js, comments /* */
+    # get php, css, js, multi-line comments /* */
     all_comments += re.findall(r"/\*.+?\*/", source_code)
+    # get single-line javascript comments
     all_comments += re.findall(r"//.+?$", source_code)
     return all_comments
 
