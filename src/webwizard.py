@@ -255,10 +255,13 @@ class Client:
             index_file.write(source_code)
         return None
 
-    def get_cookies_from_url(self, url: str) -> list:
+    def get_cookies_from_url(self) -> list:
         """Accepts a URL and gets any cookies sent from the server
         from that URL. Returns a dictionary of all cookies received."""
 
         session = requests.Session()
-        response = session.get(url)
+        response = session.get(self.url)
         return session.cookies.get_dict()
+    
+    def get_all_cookies(self) -> dict:
+        pass
