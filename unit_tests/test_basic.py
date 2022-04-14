@@ -46,7 +46,10 @@ class TestBasic(unittest.TestCase):
         CCC /* css comment */ DDD
         EEE // javascript comment
         """
-        
+        comments = webwizard.extract_comments(text)
+        correct_comments = [' html comment ', '/* css comment */', '// javascript comment']
+        for correct_comment in correct_comments:
+            self.assertIn(correct_comment, comments)
 
 if __name__ == "__main__":
     unittest.main()
