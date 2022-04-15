@@ -15,7 +15,7 @@ import requests
 
 
 def extract_comments(source_code: str) -> list:
-    """Accepts source code of a website as a string and parses comments"""
+    """Accepts source code of a website as a string and parses comments."""
 
     all_comments = []
     # set up html to be parsed, find html comments
@@ -32,7 +32,7 @@ def extract_comments(source_code: str) -> list:
 
 
 def extract_comments_from_file(file_path: str) -> list:
-    """Return a list of all comments in the file at the specified path"""
+    """Return a list of all comments in the file at the specified path."""
 
     with open(file_path, "rb") as f:
         comments = extract_comments(f.read().decode("utf-8", "ignore"))
@@ -108,7 +108,7 @@ def parse_for_flag(crib: str, text: str) -> list:
 
 
 class Client:
-    """A class to connect to a remote server"""
+    """A class to connect to a remote server and download files."""
 
     def __init__(self, url: str, directory: str) -> None:
         self.url = url
@@ -163,7 +163,7 @@ class Client:
         return robots_info
 
     def extract_comments(self) -> list:
-        """Returns a list of all comments from mirrored website"""
+        """Returns a list of all comments from mirrored website."""
 
         # get list of filepaths for each file in the folder
         subfile_list = get_files_in_dir(self.webwizard_dir)
@@ -186,7 +186,7 @@ class Client:
 
     def get_remote_files(self, link: str) -> list:
         """Parse file at the specified link for other remote files, return a
-        list of URLs to remote files"""
+        list of URLs to remote files."""
         # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []

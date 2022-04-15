@@ -5,17 +5,22 @@
     - [x] parse_for_flag -> list (UNIT TEST)
     - [x] get_files_in_dir -> list (UNIT TEST)
     - [x] extract_comments -> list (UNIT TEST)
+    - [x] extract_comments_from_file -> list
     - [x] parse_file_for_flag -> list
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
         - [x] save url
+        - [x] save directory
+        - [x] save webwizard_output directory
     - [] other methods: 
-        - [x] check_robots
-        - [x]  -> list
-        - [x] get_cookies
         - [x] check_robots -> bool
-        - []
+        - [x] crawl_robots -> dict
+        - [x] extract_comments -> list
+        - [x] get_cookies -> dict
+        - [x] get_remote_files -> list
+        - [x] mirror -> None
+        - [x] parse_website_for_flag -> list
 ## Ideas
 - attack login pages
     - sql inject
