@@ -166,9 +166,8 @@ class Client:
             comments += extract_comments_from_file(subfile)
         return comments
 
-    def get_cookies_from_url(self) -> dict:
-        """Accepts a URL and gets any cookies sent from the server
-        from that URL. Returns a dictionary of all cookies received."""
+    def get_cookies(self) -> dict:
+        """Gets any cookies sent from the server from that URL. Returns a dictionary of all cookies received."""
 
         session = requests.Session()
         response = session.get(self.url)
@@ -266,8 +265,8 @@ class Client:
             index_file.write(source_code)
         return None
 
-    def parse_directory_for_flag(self, crib: str) -> list:
-        """Parse a directory for specified crib and returns list of possible flags."""
+    def parse_website_for_flag(self, crib: str) -> list:
+        """Parse mirrored website for specified crib and returns list of possible flags."""
         # get list of filepaths for each file in the folder
         subfile_list = get_files_in_dir(self.webwizard_dir)
         # parse all subfiles for flag
