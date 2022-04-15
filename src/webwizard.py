@@ -54,8 +54,8 @@ def get_files_in_dir(path_to_directory: str) -> list:
 def parse_file_for_flag(crib: str, file_path: str) -> list:
     """Parses file for crib. Assumes file has valid utf-8 bytes."""
 
-    with open(file_path):
-        flags = parse_for_flag(crib, file_path.read())
+    with open(file_path, 'rb'):
+        flags = parse_for_flag(crib, file_path..read().decode("utf-8", "ignore"))
     return flags
 
 
