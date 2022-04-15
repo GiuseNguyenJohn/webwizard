@@ -103,26 +103,22 @@ class Client:
         # if the page actualy exists
         return r.status_code == 200
 
-    def concat_files(self, folder: str = './') -> None:
+    def parse_website_for_flag(self, crib: str, folder: str = './') -> list:
         """Download entire website at Client object's URL and parse
         source code for flag
         """
-
         # mirror website locally
-        self.mirror(self.url, folder)
-        # define name of directory with mirrored files and file to
-        # concatenate to
-        source_filepath = os.path.join(folder, 'webwizard_output/')
-        concat_filepath = os.path.join(folder, 'concatenated_output.txt')
+        source_filepath = self.mirror(self.url, folder)
         # get list of filepaths for each file
         subfile_list = get_files_in_dir(source_filepath)
-        # concatenate all subfiles in website into one file to parse
+        # parse all subfiles for flag
+        flags = []
         for subfile in subfile_list:
             with open(subfile, 'rb') as subf:
+                # remove bad utf-8 characters from image files
                 text = subf.read().decode('utf-8','ignore')
-            with open(concat_filepath, 'a') as cfile:
-                cfile.write(text)
-        return concat_filepath
+                flags += parse_for_flag(crib, text)
+        return flags
 
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists,
@@ -228,8 +224,9 @@ class Client:
         all_files = css_files + image_files + script_files
         return all_files
 
-    def mirror(self, link: str, directory: str = './') -> None:
-        """Accepts URL and mirrors website in output file named 'webwizard_output/'."""
+    def mirror(self, link: str, directory: str = './') -> str:
+        """Accepts URL and mirrors website in output directory named 'webwizard_output/'.
+        Returns path to output directory."""
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
@@ -266,4 +263,4 @@ class Client:
             r = requests.get(link)
             source_code = r.content + b"\n"
             index_file.write(source_code)
-        return None
+        return webwizard_output_dir
