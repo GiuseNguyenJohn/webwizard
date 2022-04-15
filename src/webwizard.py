@@ -55,7 +55,8 @@ def parse_file_for_flag(crib: str, file_path: str) -> list:
     """Parses file for crib. Assumes file has valid utf-8 bytes."""
 
     with open(file_path, 'rb'):
-        flags = parse_for_flag(crib, file_path..read().decode("utf-8", "ignore"))
+        # ignore bad utf-8 characters
+        flags = parse_for_flag(crib, file_path.read().decode("utf-8", "ignore"))
     return flags
 
 
@@ -282,8 +283,5 @@ class Client:
         # parse all subfiles for flag
         flags = []
         for subfile in subfile_list:
-            with open(subfile, "rb") as subf:
-                # remove bad utf-8 characters from image files
-                text = subf.read().decode("utf-8", "ignore")
-                flags += parse_for_flag(crib, text)
+            flags += parse_file_for_flag(subfile)
         return flags
