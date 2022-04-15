@@ -28,7 +28,7 @@ def extract_comments(source_code: str) -> list:
     all_comments += re.findall(r"//.+?$", source_code)
     return all_comments
 
-def extract_comments_from_file(self, file_path: str) -> list:
+def extract_comments_from_file(file_path: str) -> list:
         """Return a list of all comments in the file at the specified path"""
 
         with open(file_path) as f:
