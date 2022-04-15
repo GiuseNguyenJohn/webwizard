@@ -155,8 +155,8 @@ class Client:
             robots_info = {}
         return robots_info
 
-    def extract_comments_from_dir(self) -> list:
-        """Returns a list of all comments from specified directory"""
+    def extract_comments(self) -> list:
+        """Returns a list of all comments from mirrored website"""
 
         # get list of filepaths for each file in the folder
         subfile_list = get_files_in_dir(self.webwizard_dir)
