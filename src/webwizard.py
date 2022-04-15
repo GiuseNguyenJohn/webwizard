@@ -21,24 +21,27 @@ def extract_comments(source_code: str) -> list:
     # set up html to be parsed, find html comments
     soup = bs4.BeautifulSoup(source_code, "html.parser")
     # get html comments
-    all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
+    all_comments += soup.findAll(
+        text=lambda text: isinstance(text, bs4.Comment)
+    )
     # get php, css, js, multi-line comments /* */
     all_comments += re.findall(r"/\*.+?\*/", source_code)
     # get single-line javascript comments
     all_comments += re.findall(r"//.+?$", source_code)
     return all_comments
 
-def extract_comments_from_file(file_path: str) -> list:
-        """Return a list of all comments in the file at the specified path"""
 
-        with open(file_path) as f:
-            comments = extract_comments(f.read())
-        return comments
+def extract_comments_from_file(file_path: str) -> list:
+    """Return a list of all comments in the file at the specified path"""
+
+    with open(file_path, "rb") as f:
+        comments = extract_comments(f.read().decode("utf-8", "ignore"))
+    return comments
+
 
 def get_files_in_dir(path_to_directory: str) -> list:
-    """Accepts a path to a directory and returns a list of filepaths
-    of every file in the directory.
-    """
+    """Accepts a path to a directory and returns a list of filepaths of every
+    file in the directory."""
 
     list_of_files = []
     for root, dirs, files in os.walk(path_to_directory):
@@ -58,8 +61,7 @@ def parse_file_for_flag(crib: str, file_path: str) -> list:
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
-    and base64 encoded flags in given text.
-    """
+    and base64 encoded flags in given text."""
 
     crib = crib.strip("{")
     regex_string = ""
@@ -83,14 +85,19 @@ def parse_for_flag(crib: str, text: str) -> list:
     base64_flags = base64_pattern.findall(text)
     # append decoded flag with description of encoding to possible flags
     if plaintext_flags:
-        possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
+        possible_flags += [
+            "plaintext flag: {}".format(x) for x in plaintext_flags
+        ]
     if rot13_flags:
         possible_flags += [
-            "rot13 flag: {}".format(codecs.decode(x, "rot-13")) for x in rot13_flags
+            "rot13 flag: {}".format(codecs.decode(x, "rot-13"))
+            for x in rot13_flags
         ]
     if base64_flags:
         possible_flags += [
-            "base64 flag: {}".format(base64.b64decode(bytes(x, "utf-8")).decode())
+            "base64 flag: {}".format(
+                base64.b64decode(bytes(x, "utf-8")).decode()
+            )
             for x in base64_flags
         ]
     # print possible flags and exit
@@ -106,11 +113,11 @@ class Client:
     def __init__(self, url: str, directory: str) -> None:
         self.url = url
         self.directory = directory
-        self.webwizard_dir = os.path.join(directory, 'webwizard_output/')
+        self.webwizard_dir = os.path.join(directory, "webwizard_output/")
 
     def check_robots(self) -> bool:
-        """Makes a GET request to robots.txt and returns True
-        if http response is 200, and False if anything else."""
+        """Makes a GET request to robots.txt and returns True if http response
+        is 200, and False if anything else."""
 
         robots_link = self.url + "robots.txt"
         r = requests.get(robots_link)
@@ -118,8 +125,8 @@ class Client:
         return r.status_code == 200
 
     def crawl_robots(self) -> dict:
-        """Accesses robots.txt and if the page exists,
-        returns a dictionary with organized information."""
+        """Accesses robots.txt and if the page exists, returns a dictionary
+        with organized information."""
 
         robots_link = self.url + "robots.txt"
         r = requests.get(robots_link)
@@ -167,7 +174,8 @@ class Client:
         return comments
 
     def get_cookies(self) -> dict:
-        """Gets any cookies sent from the server from that URL. Returns a dictionary of all cookies received."""
+        """Gets any cookies sent from the server from that URL. Returns a
+        dictionary of all cookies received."""
 
         session = requests.Session()
         response = session.get(self.url)
@@ -177,8 +185,8 @@ class Client:
         pass
 
     def get_remote_files(self, link: str) -> list:
-        """Parse file at the specified link for other remote files,
-        return a list of URLs to remote files"""
+        """Parse file at the specified link for other remote files, return a
+        list of URLs to remote files"""
         # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
@@ -227,7 +235,8 @@ class Client:
     def mirror(self, link: str) -> None:
         # TODO: ask David why this function takes a link instead of using self.url
         # TODO: consider whether to add a directory attribute to __init__
-        """Accepts URL and mirrors website in output directory named 'webwizard_output/'."""
+        """Accepts URL and mirrors website in output directory named
+        'webwizard_output/'."""
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
@@ -266,7 +275,8 @@ class Client:
         return None
 
     def parse_website_for_flag(self, crib: str) -> list:
-        """Parse mirrored website for specified crib and returns list of possible flags."""
+        """Parse mirrored website for specified crib and returns list of
+        possible flags."""
         # get list of filepaths for each file in the folder
         subfile_list = get_files_in_dir(self.webwizard_dir)
         # parse all subfiles for flag
