@@ -28,6 +28,12 @@ def extract_comments(source_code: str) -> list:
     all_comments += re.findall(r"//.+?$", source_code)
     return all_comments
 
+def extract_comments_from_file(self, file_path: str) -> list:
+        """Return a list of all comments in the file at the specified path"""
+
+        with open(file_path) as f:
+            comments = extract_comments(f.read())
+        return comments
 
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
@@ -100,6 +106,7 @@ class Client:
     def __init__(self, url: str, directory: str) -> None:
         self.url = url
         self.directory = directory
+        self.webwizard_dir = os.path.join(directory, 'webwizard_output/')
 
     def check_robots(self) -> bool:
         """Makes a GET request to robots.txt and returns True
@@ -109,19 +116,6 @@ class Client:
         r = requests.get(robots_link)
         # if the page actualy exists
         return r.status_code == 200
-
-    def parse_directory_for_flag(self, crib: str, folder: str = "./webwizard_output/") -> list:
-        """Parse a directory for specified crib and returns list of possible flags."""
-        # get list of filepaths for each file
-        subfile_list = get_files_in_dir(folder)
-        # parse all subfiles for flag
-        flags = []
-        for subfile in subfile_list:
-            with open(subfile, "rb") as subf:
-                # remove bad utf-8 characters from image files
-                text = subf.read().decode("utf-8", "ignore")
-                flags += parse_for_flag(crib, text)
-        return flags
 
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists,
@@ -161,17 +155,17 @@ class Client:
             robots_info = {}
         return robots_info
 
-    def extract_comments_from_file(self, file_path: str) -> list:
-        """Return a list of all comments in the file at the specified path"""
-
-        with open(file_path) as f:
-            comments = extract_comments(f.read())
-        return comments
-
     def extract_comments_from_dir(self) -> list:
         """Returns a list of all comments from specified directory"""
 
-        
+        # get list of filepaths for each file in the folder
+        subfile_list = get_files_in_dir(self.webwizard_dir)
+        # parse all subfiles for comments
+        comments = []
+        for subfile in subfile_list:
+            comments += extract_comments_from_file(subfile)
+        return comments
+
     def get_cookies_from_url(self) -> dict:
         """Accepts a URL and gets any cookies sent from the server
         from that URL. Returns a dictionary of all cookies received."""
@@ -231,19 +225,17 @@ class Client:
         all_files = css_files + image_files + script_files
         return all_files
 
-    def mirror(self, link: str, directory: str = "./") -> str:
+    def mirror(self, link: str) -> None:
         # TODO: ask David why this function takes a link instead of using self.url
         # TODO: consider whether to add a directory attribute to __init__
-        """Accepts URL and mirrors website in output directory named 'webwizard_output/'.
-        Returns path to output directory."""
+        """Accepts URL and mirrors website in output directory named 'webwizard_output/'."""
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
-        webwizard_output_dir = os.path.join(directory, "webwizard_output")
-        if not os.path.isdir(webwizard_output_dir):
-            os.mkdir(webwizard_output_dir)
+        if not os.path.isdir(self.webwizard_dir):
+            os.mkdir(self.webwizard_dir)
         # function to prepend 'webwizard_output_dir'
-        prepend_directory = lambda x: os.path.join(webwizard_output_dir, x)
+        prepend_directory = lambda x: os.path.join(self.webwizard_dir, x)
         # make directories that mirror website structure and download
         # all files
         for url in all_files:
@@ -272,4 +264,17 @@ class Client:
             r = requests.get(link)
             source_code = r.content + b"\n"
             index_file.write(source_code)
-        return webwizard_output_dir
+        return None
+
+    def parse_directory_for_flag(self, crib: str) -> list:
+        """Parse a directory for specified crib and returns list of possible flags."""
+        # get list of filepaths for each file in the folder
+        subfile_list = get_files_in_dir(self.webwizard_dir)
+        # parse all subfiles for flag
+        flags = []
+        for subfile in subfile_list:
+            with open(subfile, "rb") as subf:
+                # remove bad utf-8 characters from image files
+                text = subf.read().decode("utf-8", "ignore")
+                flags += parse_for_flag(crib, text)
+        return flags
