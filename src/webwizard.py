@@ -97,8 +97,9 @@ def parse_for_flag(crib: str, text: str) -> list:
 class Client:
     """A class to connect to a remote server"""
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, directory: str) -> None:
         self.url = url
+        self.directory = directory
 
     def check_robots(self) -> bool:
         """Makes a GET request to robots.txt and returns True
@@ -109,14 +110,10 @@ class Client:
         # if the page actualy exists
         return r.status_code == 200
 
-    def parse_website_for_flag(self, crib: str, folder: str = "./") -> list:
-        """Download entire website at Client object's URL and parse
-        source code for flag
-        """
-        # mirror website locally
-        source_filepath = self.mirror(self.url, folder)
+    def parse_directory_for_flag(self, crib: str, folder: str = "./webwizard_output/") -> list:
+        """Parse a directory for specified crib and returns list of possible flags."""
         # get list of filepaths for each file
-        subfile_list = get_files_in_dir(source_filepath)
+        subfile_list = get_files_in_dir(folder)
         # parse all subfiles for flag
         flags = []
         for subfile in subfile_list:
@@ -164,13 +161,17 @@ class Client:
             robots_info = {}
         return robots_info
 
-    def extract_comments_from_file(self, file_path) -> list:
-        """Return a list of all comments in the source code of the website"""
+    def extract_comments_from_file(self, file_path: str) -> list:
+        """Return a list of all comments in the file at the specified path"""
 
         with open(file_path) as f:
             comments = extract_comments(f.read())
         return comments
 
+    def extract_comments_from_dir(self) -> list:
+        """Returns a list of all comments from specified directory"""
+
+        
     def get_cookies_from_url(self) -> dict:
         """Accepts a URL and gets any cookies sent from the server
         from that URL. Returns a dictionary of all cookies received."""
@@ -231,6 +232,8 @@ class Client:
         return all_files
 
     def mirror(self, link: str, directory: str = "./") -> str:
+        # TODO: ask David why this function takes a link instead of using self.url
+        # TODO: consider whether to add a directory attribute to __init__
         """Accepts URL and mirrors website in output directory named 'webwizard_output/'.
         Returns path to output directory."""
         # get a list of all remote files to mirror
