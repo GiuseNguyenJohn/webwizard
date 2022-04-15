@@ -13,12 +13,13 @@ import os
 import re
 import requests
 
+
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments"""
-    
+
     all_comments = []
     # set up html to be parsed, find html comments
-    soup = bs4.BeautifulSoup(source_code, 'html.parser')
+    soup = bs4.BeautifulSoup(source_code, "html.parser")
     # get html comments
     all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
     # get php, css, js, multi-line comments /* */
@@ -26,6 +27,7 @@ def extract_comments(source_code: str) -> list:
     # get single-line javascript comments
     all_comments += re.findall(r"//.+?$", source_code)
     return all_comments
+
 
 def get_files_in_dir(path_to_directory: str) -> list:
     """Accepts a path to a directory and returns a list of filepaths
@@ -36,8 +38,9 @@ def get_files_in_dir(path_to_directory: str) -> list:
     for root, dirs, files in os.walk(path_to_directory):
         for file in files:
             # append relative filepaths
-            list_of_files.append(os.path.join(root,file))
+            list_of_files.append(os.path.join(root, file))
     return list_of_files
+
 
 def parse_file_for_flag(crib: str, file_path: str) -> list:
     """Parses file for crib. Assumes file has valid utf-8 bytes."""
@@ -45,6 +48,7 @@ def parse_file_for_flag(crib: str, file_path: str) -> list:
     with open(file_path):
         flags = parse_for_flag(crib, file_path.read())
     return flags
+
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
@@ -61,9 +65,11 @@ def parse_for_flag(crib: str, text: str) -> list:
     regex_string += r"\{.*?\}"
     # Pattern of plaintext, rot13, and base64
     plaintext_pattern = re.compile(regex_string)
-    rot13_pattern = re.compile(codecs.encode(regex_string, 'rot-13'))
-    base64_first_three = base64.b64encode(bytes(crib, 'utf-8')).decode()
-    base64_pattern = re.compile(f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s")
+    rot13_pattern = re.compile(codecs.encode(regex_string, "rot-13"))
+    base64_first_three = base64.b64encode(bytes(crib, "utf-8")).decode()
+    base64_pattern = re.compile(
+        f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s"
+    )
     # Get list of possible flags
     possible_flags = []
     plaintext_flags = plaintext_pattern.findall(text)
@@ -74,19 +80,19 @@ def parse_for_flag(crib: str, text: str) -> list:
         possible_flags += ["plaintext flag: {}".format(x) for x in plaintext_flags]
     if rot13_flags:
         possible_flags += [
-            "rot13 flag: {}".format(codecs.decode(x, 'rot-13')) for x in rot13_flags
+            "rot13 flag: {}".format(codecs.decode(x, "rot-13")) for x in rot13_flags
         ]
     if base64_flags:
         possible_flags += [
-            "base64 flag: {}".format(
-                base64.b64decode(bytes(x, 'utf-8')).decode()
-            ) for x in base64_flags
+            "base64 flag: {}".format(base64.b64decode(bytes(x, "utf-8")).decode())
+            for x in base64_flags
         ]
     # print possible flags and exit
     if possible_flags:
         for flag in possible_flags:
             print(flag)
     return possible_flags
+
 
 class Client:
     """A class to connect to a remote server"""
@@ -103,7 +109,7 @@ class Client:
         # if the page actualy exists
         return r.status_code == 200
 
-    def parse_website_for_flag(self, crib: str, folder: str = './') -> list:
+    def parse_website_for_flag(self, crib: str, folder: str = "./") -> list:
         """Download entire website at Client object's URL and parse
         source code for flag
         """
@@ -114,26 +120,26 @@ class Client:
         # parse all subfiles for flag
         flags = []
         for subfile in subfile_list:
-            with open(subfile, 'rb') as subf:
+            with open(subfile, "rb") as subf:
                 # remove bad utf-8 characters from image files
-                text = subf.read().decode('utf-8','ignore')
+                text = subf.read().decode("utf-8", "ignore")
                 flags += parse_for_flag(crib, text)
         return flags
 
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists,
-         returns a dictionary with organized information."""
+        returns a dictionary with organized information."""
 
         robots_link = self.url + "robots.txt"
         r = requests.get(robots_link)
         # if the page actualy exists
         if r.status_code == 200:
             robots_info = {
-                "comments" : [],
-                "user-agent" : [],
-                "disallow" : [],
-                "allow" : [],
-                "sitemap" : []
+                "comments": [],
+                "user-agent": [],
+                "disallow": [],
+                "allow": [],
+                "sitemap": [],
             }
             # organize the information in robots.txt
             robots = r.content.decode().split("\n")
@@ -164,7 +170,7 @@ class Client:
         with open(file_path) as f:
             comments = extract_comments(f.read())
         return comments
-    
+
     def get_cookies_from_url(self) -> dict:
         """Accepts a URL and gets any cookies sent from the server
         from that URL. Returns a dictionary of all cookies received."""
@@ -172,13 +178,13 @@ class Client:
         session = requests.Session()
         response = session.get(self.url)
         return session.cookies.get_dict()
-    
+
     def get_all_cookies(self) -> dict:
         pass
-        
+
     def get_remote_files(self, link: str) -> list:
         """Parse file at the specified link for other remote files,
-        return a list of URLs to remote files"""        
+        return a list of URLs to remote files"""
         # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
@@ -224,13 +230,13 @@ class Client:
         all_files = css_files + image_files + script_files
         return all_files
 
-    def mirror(self, link: str, directory: str = './') -> str:
+    def mirror(self, link: str, directory: str = "./") -> str:
         """Accepts URL and mirrors website in output directory named 'webwizard_output/'.
         Returns path to output directory."""
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(link)
         # make 'webwizard_output/' directory
-        webwizard_output_dir = os.path.join(directory, 'webwizard_output')
+        webwizard_output_dir = os.path.join(directory, "webwizard_output")
         if not os.path.isdir(webwizard_output_dir):
             os.mkdir(webwizard_output_dir)
         # function to prepend 'webwizard_output_dir'
@@ -238,11 +244,11 @@ class Client:
         # make directories that mirror website structure and download
         # all files
         for url in all_files:
-            path = url[len(link):].split("/")
+            path = url[len(link) :].split("/")
             if len(path) > 1:
                 file_name = path[-1]
                 folders = path[:-1]
-                local_path = prepend_directory('/'.join(folders))
+                local_path = prepend_directory("/".join(folders))
                 # make directories if they don't exist
                 if not os.path.isdir(local_path):
                     os.makedirs(local_path)
