@@ -235,7 +235,6 @@ class Client:
 
     def mirror(self, link: str) -> None:
         # TODO: ask David why this function takes a link instead of using self.url
-        # TODO: consider whether to add a directory attribute to __init__
         """Accepts URL and mirrors website in output directory named
         'webwizard_output/'."""
         # get a list of all remote files to mirror
