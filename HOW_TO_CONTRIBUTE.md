@@ -21,6 +21,10 @@
         - [x] get_remote_files -> list
         - [x] mirror -> None
         - [x] parse_website_for_flag -> list
+
+## Questions
+- directory parameter for Client class?
+
 ## Ideas
 - attack login pages
     - sql inject
