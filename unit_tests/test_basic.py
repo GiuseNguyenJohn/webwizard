@@ -53,6 +53,14 @@ class TestBasic(unittest.TestCase):
     def test_parse_file_for_flag(self):
         """Will function return ?"""
         pass
+    
+    def test_extract_comments_from_file(self):
+        """"""
+        pass
+    
+    def test_fuzz_sql(self):
+        """"""
+        pass
 
 if __name__ == "__main__":
     unittest.main()
