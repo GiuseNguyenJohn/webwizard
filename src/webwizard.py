@@ -188,7 +188,6 @@ class Client:
     def get_remote_files(self, link: str) -> list:
         """Parse file at the specified link for other remote files, return a
         list of URLs to remote files."""
-        # TODO: mirror php files (ex.  <form role="form" action="login.php" method="post">)
         css_files = []
         image_files = []
         script_files = []
@@ -233,12 +232,11 @@ class Client:
         all_files = css_files + image_files + script_files
         return all_files
 
-    def mirror(self, link: str) -> None:
-        # TODO: ask David why this function takes a link instead of using self.url
+    def mirror(self) -> None:
         """Accepts URL and mirrors website in output directory named
         'webwizard_output/'."""
         # get a list of all remote files to mirror
-        all_files = self.get_remote_files(link)
+        all_files = self.get_remote_files(self.url)
         # make 'webwizard_output/' directory
         if not os.path.isdir(self.webwizard_dir):
             os.mkdir(self.webwizard_dir)
@@ -247,7 +245,7 @@ class Client:
         # make directories that mirror website structure and download
         # all files
         for url in all_files:
-            path = url[len(link) :].split("/")
+            path = url[len(self.url) :].split("/")
             if len(path) > 1:
                 file_name = path[-1]
                 folders = path[:-1]
@@ -269,7 +267,7 @@ class Client:
         with open(prepend_directory("index.html"), "wb") as index_file:
             # make a GET request to the website url, append \n
             # so properly ends with a newline
-            r = requests.get(link)
+            r = requests.get(self.url)
             source_code = r.content + b"\n"
             index_file.write(source_code)
         return None
