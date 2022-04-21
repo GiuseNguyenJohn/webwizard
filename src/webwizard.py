@@ -12,6 +12,7 @@ import codecs
 import os
 import re
 import requests
+from colorama import Fore, Back, Style
 
 
 def extract_comments(source_code: str) -> list:
@@ -104,7 +105,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     # print possible flags and exit
     if possible_flags:
         for flag in possible_flags:
-            print(flag)
+            print(Fore.CYAN + Back.GREEN + Style.BRIGHT + flag + Style.RESET_ALL)
     return possible_flags
 
 

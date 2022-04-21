@@ -7,6 +7,7 @@
     - [x] extract_comments -> list (UNIT TEST)
     - [x] extract_comments_from_file -> list
     - [x] parse_file_for_flag -> list
+    - [] fuzz_sqli -> 
 
 - [] Create class 'client' with parameters: URL
     - [x] \_\_init\_\_ should
@@ -23,7 +24,6 @@
         - [x] parse_website_for_flag -> list
 
 ## Questions
-- directory parameter for Client class?
 
 ## Ideas
 - attack login pages
