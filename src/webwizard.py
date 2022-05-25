@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A python module to aid and automate CTF web challenges.
+A python module to aid and automate basic CTF web challenges.
 
 Authors: John (@Magicks52), David (@DavidTimothyNam), Arya (@AryaGill)
 Tested: Python 3.10.4 on Kali Linux and Python 3.9.5 on Ubuntu
@@ -12,7 +12,6 @@ import codecs
 import os
 import re
 import requests
-from colorama import Fore, Back, Style
 
 
 def extract_comments(source_code: str) -> list:
@@ -102,10 +101,6 @@ def parse_for_flag(crib: str, text: str) -> list:
             )
             for x in base64_flags
         ]
-    # print possible flags and exit
-    if possible_flags:
-        for flag in possible_flags:
-            print(Fore.CYAN + Back.GREEN + Style.BRIGHT + flag + Style.RESET_ALL)
     return possible_flags
 
 
@@ -116,15 +111,6 @@ class Client:
         self.url = url
         self.directory = directory
         self.webwizard_dir = os.path.join(directory, "webwizard_output/")
-
-    def check_robots(self) -> bool:
-        """Makes a GET request to robots.txt and returns True if http response
-        is 200, and False if anything else."""
-
-        robots_link = self.url + "robots.txt"
-        r = requests.get(robots_link)
-        # if the page actualy exists
-        return r.status_code == 200
 
     def crawl_robots(self) -> dict:
         """Accesses robots.txt and if the page exists, returns a dictionary
