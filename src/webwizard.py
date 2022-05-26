@@ -54,7 +54,7 @@ def get_files_in_dir(path_to_directory: str) -> list:
 
 
 def parse_file_for_flag(crib: str, file_path: str) -> list:
-    """Parses file for crib. Assumes file has valid utf-8 bytes."""
+    """Parses file for crib."""
 
     with open(file_path, "rb") as f:
         # ignore bad utf-8 characters
@@ -114,7 +114,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     return format_flags(plaintext_flags, rot13_flags, base64_flags)
 
 
-class Client:
+class Wizard:
     """A class to connect to a remote server and download files."""
 
     def __init__(self, url: str, directory: str) -> None:
