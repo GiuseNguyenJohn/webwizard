@@ -75,13 +75,21 @@ def make_regex_string(crib: str) -> str:
     regex_string += r"\{.*?\}"
     return regex_string
 
+def rot13_decode(enc: str) -> str:
+    """Return decoded rot13 string."""
+    return codecs.decode(enc, "rot-13")
+
+def base64_decode(enc: str) -> str:
+    """Return decoded base64 string."""
+    return base64.b64decode(bytes(enc, "utf-8")).decode()
+
 def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -> dict:
-    """Return a dictionary of flags."""
+    """Return a dictionary of decoded flags."""
 
     flags = {
         "plaintext": plaintext_flags,
-        "rot13": rot13_flags,
-        "base64": base64_flags
+        "rot13": list(map(rot13_decode, rot13_flags)),
+        "base64": list(map(base64_decode, base64_flags))
     }
     return flags
 
