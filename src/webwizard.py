@@ -13,6 +13,8 @@ import os
 import re
 import requests
 
+from urllib.parse import urljoin
+from pprint import pprint
 
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments."""
@@ -60,9 +62,8 @@ def parse_file_for_flag(crib: str, file_path: str) -> list:
     return flags
 
 
-def parse_for_flag(crib: str, text: str) -> list:
-    """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
-    and base64 encoded flags in given text."""
+def make_regex_string(crib: str) -> str:
+    """Accepts a CTF flag crib and formats it."""
 
     crib = crib.strip("{")
     regex_string = ""
@@ -72,7 +73,24 @@ def parse_for_flag(crib: str, text: str) -> list:
     # regex string will match flag with any padding of less than 2 characters
     # in between each flag character (above)
     regex_string += r"\{.*?\}"
-    # Pattern of plaintext, rot13, and base64
+    return regex_string
+
+def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -> dict:
+    """Return a dictionary of flags."""
+
+    flags = {
+        "plaintext": plaintext_flags,
+        "rot13": rot13_flags,
+        "base64": base64_flags
+    }
+    return flags
+
+def parse_for_flag(crib: str, text: str) -> list:
+    """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
+    and base64 encoded flags in given text."""
+
+    regex_string = make_regex_string(crib)
+    # make regex objects from patterns for plaintext, rot13, and base64
     plaintext_pattern = re.compile(regex_string)
     rot13_pattern = re.compile(codecs.encode(regex_string, "rot-13"))
     base64_first_three = base64.b64encode(bytes(crib, "utf-8")).decode()
@@ -85,23 +103,7 @@ def parse_for_flag(crib: str, text: str) -> list:
     rot13_flags = rot13_pattern.findall(text)
     base64_flags = base64_pattern.findall(text)
     # append decoded flag with description of encoding to possible flags
-    if plaintext_flags:
-        possible_flags += [
-            "plaintext flag: {}".format(x) for x in plaintext_flags
-        ]
-    if rot13_flags:
-        possible_flags += [
-            "rot13 flag: {}".format(codecs.decode(x, "rot-13"))
-            for x in rot13_flags
-        ]
-    if base64_flags:
-        possible_flags += [
-            "base64 flag: {}".format(
-                base64.b64decode(bytes(x, "utf-8")).decode()
-            )
-            for x in base64_flags
-        ]
-    return possible_flags
+    return format_flags(plaintext_flags, rot13_flags, base64_flags)
 
 
 class Client:
