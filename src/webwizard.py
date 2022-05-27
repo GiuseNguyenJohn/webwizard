@@ -16,6 +16,7 @@ import requests
 from urllib.parse import urljoin
 from pprint import pprint
 
+
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments."""
 
@@ -23,9 +24,7 @@ def extract_comments(source_code: str) -> list:
     # set up html to be parsed, find html comments
     soup = bs4.BeautifulSoup(source_code, "html.parser")
     # get html comments
-    all_comments += soup.findAll(
-        text=lambda text: isinstance(text, bs4.Comment)
-    )
+    all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
     # get php, css, js, multi-line comments /* */
     all_comments += re.findall(r"/\*.+?\*/", source_code)
     # get single-line javascript comments
@@ -54,7 +53,7 @@ def get_files_in_dir(path_to_directory: str) -> list:
 
 
 def parse_file_for_flag(crib: str, file_path: str) -> list:
-    """Parses file for crib. Assumes file has valid utf-8 bytes."""
+    """Parses file for crib."""
 
     with open(file_path, "rb") as f:
         # ignore bad utf-8 characters
@@ -75,13 +74,16 @@ def make_regex_string(crib: str) -> str:
     regex_string += r"\{.*?\}"
     return regex_string
 
+
 def rot13_decode(enc: str) -> str:
     """Return decoded rot13 string."""
     return codecs.decode(enc, "rot-13")
 
+
 def base64_decode(enc: str) -> str:
     """Return decoded base64 string."""
     return base64.b64decode(bytes(enc, "utf-8")).decode()
+
 
 def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -> dict:
     """Return a dictionary of decoded flags."""
@@ -89,9 +91,10 @@ def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -
     flags = {
         "plaintext": plaintext_flags,
         "rot13": list(map(rot13_decode, rot13_flags)),
-        "base64": list(map(base64_decode, base64_flags))
+        "base64": list(map(base64_decode, base64_flags)),
     }
     return flags
+
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
@@ -106,7 +109,6 @@ def parse_for_flag(crib: str, text: str) -> list:
         f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s"
     )
     # Get list of possible flags
-    possible_flags = []
     plaintext_flags = plaintext_pattern.findall(text)
     rot13_flags = rot13_pattern.findall(text)
     base64_flags = base64_pattern.findall(text)
@@ -114,10 +116,10 @@ def parse_for_flag(crib: str, text: str) -> list:
     return format_flags(plaintext_flags, rot13_flags, base64_flags)
 
 
-class Client:
+class Wizard:
     """A class to connect to a remote server and download files."""
 
-    def __init__(self, url: str, directory: str) -> None:
+    def __init__(self, url: str, directory: str = "./") -> None:
         self.url = url
         self.directory = directory
         self.webwizard_dir = os.path.join(directory, "webwizard_output/")
@@ -160,7 +162,7 @@ class Client:
             robots_info = {}
         return robots_info
 
-    def extract_comments(self) -> list:
+    def get_comments(self) -> list:
         """Returns a list of all comments from mirrored website."""
 
         # get list of filepaths for each file in the folder
@@ -230,8 +232,8 @@ class Client:
         return all_files
 
     def mirror(self) -> None:
-        """Accepts URL and mirrors website in output directory named
-        'webwizard_output/'."""
+        """Mirrors website in output directory 'webwizard_output/'."""
+
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(self.url)
         # make 'webwizard_output/' directory
@@ -245,25 +247,25 @@ class Client:
             path = url[len(self.url) :].split("/")
             if len(path) > 1:
                 file_name = path[-1]
-                folders = path[:-1]
-                local_path = prepend_directory("/".join(folders))
+                # everything in the URL up to the filename
+                local_path = prepend_directory("/".join(path[:-1]))
                 # make directories if they don't exist
                 if not os.path.isdir(local_path):
                     os.makedirs(local_path)
                 # download all files
-                i = requests.get(url)
+                page = requests.get(url)
                 with open(f"{local_path}/{file_name}", "wb") as source_file:
-                    source_file.write(i.content)
+                    source_file.write(page.content)
             else:
                 # if the file being requested is at the root of the website,
                 # write it directly to 'webwizard_output/'
-                i = requests.get(url)
+                page = requests.get(url)
                 with open(prepend_directory(path[0]), "wb") as source_file:
-                    source_file.write(i.content)
+                    source_file.write(page.content)
         # download 'index.html'
         with open(prepend_directory("index.html"), "wb") as index_file:
             # make a GET request to the website url, append \n
-            # so properly ends with a newline
+            # so it properly ends with a newline
             r = requests.get(self.url)
             source_code = r.content + b"\n"
             index_file.write(source_code)
