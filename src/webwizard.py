@@ -229,8 +229,8 @@ class Wizard:
         return all_files
 
     def mirror(self) -> None:
-        """Accepts URL and mirrors website in output directory named
-        'webwizard_output/'."""
+        """Mirrors website in output directory 'webwizard_output/'."""
+
         # get a list of all remote files to mirror
         all_files = self.get_remote_files(self.url)
         # make 'webwizard_output/' directory
@@ -244,25 +244,25 @@ class Wizard:
             path = url[len(self.url) :].split("/")
             if len(path) > 1:
                 file_name = path[-1]
-                folders = path[:-1]
-                local_path = prepend_directory("/".join(folders))
+                # everything in the URL up to the filename
+                local_path = prepend_directory("/".join(path[:-1]))
                 # make directories if they don't exist
                 if not os.path.isdir(local_path):
                     os.makedirs(local_path)
                 # download all files
-                i = requests.get(url)
+                page = requests.get(url)
                 with open(f"{local_path}/{file_name}", "wb") as source_file:
-                    source_file.write(i.content)
+                    source_file.write(page.content)
             else:
                 # if the file being requested is at the root of the website,
                 # write it directly to 'webwizard_output/'
-                i = requests.get(url)
+                page = requests.get(url)
                 with open(prepend_directory(path[0]), "wb") as source_file:
-                    source_file.write(i.content)
+                    source_file.write(page.content)
         # download 'index.html'
         with open(prepend_directory("index.html"), "wb") as index_file:
             # make a GET request to the website url, append \n
-            # so properly ends with a newline
+            # so it properly ends with a newline
             r = requests.get(self.url)
             source_code = r.content + b"\n"
             index_file.write(source_code)
