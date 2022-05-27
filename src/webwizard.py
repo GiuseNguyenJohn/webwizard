@@ -16,6 +16,7 @@ import requests
 from urllib.parse import urljoin
 from pprint import pprint
 
+
 def extract_comments(source_code: str) -> list:
     """Accepts source code of a website as a string and parses comments."""
 
@@ -23,9 +24,7 @@ def extract_comments(source_code: str) -> list:
     # set up html to be parsed, find html comments
     soup = bs4.BeautifulSoup(source_code, "html.parser")
     # get html comments
-    all_comments += soup.findAll(
-        text=lambda text: isinstance(text, bs4.Comment)
-    )
+    all_comments += soup.findAll(text=lambda text: isinstance(text, bs4.Comment))
     # get php, css, js, multi-line comments /* */
     all_comments += re.findall(r"/\*.+?\*/", source_code)
     # get single-line javascript comments
@@ -75,13 +74,16 @@ def make_regex_string(crib: str) -> str:
     regex_string += r"\{.*?\}"
     return regex_string
 
+
 def rot13_decode(enc: str) -> str:
     """Return decoded rot13 string."""
     return codecs.decode(enc, "rot-13")
 
+
 def base64_decode(enc: str) -> str:
     """Return decoded base64 string."""
     return base64.b64decode(bytes(enc, "utf-8")).decode()
+
 
 def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -> dict:
     """Return a dictionary of decoded flags."""
@@ -89,9 +91,10 @@ def format_flags(plaintext_flags: list, rot13_flags: list, base64_flags: list) -
     flags = {
         "plaintext": plaintext_flags,
         "rot13": list(map(rot13_decode, rot13_flags)),
-        "base64": list(map(base64_decode, base64_flags))
+        "base64": list(map(base64_decode, base64_flags)),
     }
     return flags
+
 
 def parse_for_flag(crib: str, text: str) -> list:
     """Accepts a CTF flag crib and uses it to find plaintext, rot13 encoded,
@@ -116,7 +119,7 @@ def parse_for_flag(crib: str, text: str) -> list:
 class Wizard:
     """A class to connect to a remote server and download files."""
 
-    def __init__(self, url: str, directory: str='./') -> None:
+    def __init__(self, url: str, directory: str = "./") -> None:
         self.url = url
         self.directory = directory
         self.webwizard_dir = os.path.join(directory, "webwizard_output/")
