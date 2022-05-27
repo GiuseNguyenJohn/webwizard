@@ -52,15 +52,6 @@ def get_files_in_dir(path_to_directory: str) -> list:
     return list_of_files
 
 
-def parse_file_for_flag(crib: str, file_path: str) -> list:
-    """Parses file for crib."""
-
-    with open(file_path, "rb") as f:
-        # ignore bad utf-8 characters
-        flags = parse_for_flag(crib, f.read().decode("utf-8", "ignore"))
-    return flags
-
-
 def make_regex_string(crib: str) -> str:
     """Accepts a CTF flag crib and formats it."""
 
@@ -114,6 +105,15 @@ def parse_for_flag(crib: str, text: str) -> list:
     base64_flags = base64_pattern.findall(text)
     # append decoded flag with description of encoding to possible flags
     return format_flags(plaintext_flags, rot13_flags, base64_flags)
+
+
+def parse_file_for_flag(crib: str, file_path: str) -> list:
+    """Parses file for crib."""
+
+    with open(file_path, "rb") as f:
+        # ignore bad utf-8 characters
+        flags = parse_for_flag(crib, f.read().decode("utf-8", "ignore"))
+    return flags
 
 
 class Wizard:
