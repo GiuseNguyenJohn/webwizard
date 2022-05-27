@@ -106,7 +106,6 @@ def parse_for_flag(crib: str, text: str) -> list:
         f"{base64_first_three[0:3]}[+\\\\A-Za-z0-9]+[=]{{0,2}}\s"
     )
     # Get list of possible flags
-    possible_flags = []
     plaintext_flags = plaintext_pattern.findall(text)
     rot13_flags = rot13_pattern.findall(text)
     base64_flags = base64_pattern.findall(text)
@@ -117,7 +116,7 @@ def parse_for_flag(crib: str, text: str) -> list:
 class Wizard:
     """A class to connect to a remote server and download files."""
 
-    def __init__(self, url: str, directory: str) -> None:
+    def __init__(self, url: str, directory: str='./') -> None:
         self.url = url
         self.directory = directory
         self.webwizard_dir = os.path.join(directory, "webwizard_output/")
@@ -160,7 +159,7 @@ class Wizard:
             robots_info = {}
         return robots_info
 
-    def extract_comments(self) -> list:
+    def get_comments(self) -> list:
         """Returns a list of all comments from mirrored website."""
 
         # get list of filepaths for each file in the folder
