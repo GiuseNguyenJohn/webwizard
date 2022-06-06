@@ -2,7 +2,7 @@
 
 import tempfile
 import unittest
-import webwizard
+from webwizard import webwizard
 
 class TestBasic(unittest.TestCase):
     """Test basic features of webwizard"""
