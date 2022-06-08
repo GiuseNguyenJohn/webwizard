@@ -128,7 +128,7 @@ class Wizard:
         """Accesses robots.txt and if the page exists, returns a dictionary
         with organized information."""
 
-        robots_link = self.url + "robots.txt"
+        robots_link = urljoin(self.url, "robots.txt")
         r = requests.get(robots_link)
         # if the page actualy exists
         if r.status_code == 200:
@@ -204,7 +204,7 @@ class Wizard:
                 # if 'file_path' is not a full URL yet, append the
                 # first part of the URL (the domain name)
                 if "http" not in file_path:
-                    file_path = link + file_path
+                    file_path = urljoin(link, file_path)
                     # check to see if css file was already referenced
                     # elsewhere in the source code
                     if file_path not in css_files:
@@ -215,7 +215,7 @@ class Wizard:
             if image.attrs.get("src"):
                 file_path = image.attrs.get("src")
                 if "http" not in file_path:
-                    file_path = link + file_path
+                    file_path = urljoin(link, file_path)
                     if file_path not in image_files:
                         image_files.append(file_path)
         # find all '<script>' tags and use the path from the 'src'
@@ -224,7 +224,7 @@ class Wizard:
             if script.attrs.get("src"):
                 file_path = script.attrs.get("src")
                 if "http" not in file_path:
-                    file_path = link + file_path
+                    file_path = urljoin(link, file_path)
                     if file_path not in script_files:
                         script_files.append(file_path)
         # make a list of all the URLs to all the files to download
