@@ -119,9 +119,8 @@ def parse_file_for_flag(crib: str, file_path: str) -> list:
 class Wizard:
     """A class to connect to a remote server and download files."""
 
-    def __init__(self, url: str, directory: str = "./") -> None:
+    def __init__(self, url: str, directory: str = "/tmp/") -> None:
         self.url = url
-        self.directory = directory
         self.webwizard_dir = os.path.join(directory, "webwizard_output/")
 
     def crawl_robots(self) -> dict:
