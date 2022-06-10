@@ -278,5 +278,5 @@ class Wizard:
         # parse all subfiles for flag
         flags = []
         for subfile in subfile_list:
-            flags += parse_file_for_flag(crib, subfile)
+            flags.append(parse_file_for_flag(crib, subfile))
         return flags
