@@ -3,3 +3,8 @@
 ![PyPI](https://img.shields.io/pypi/v/webwizard)
 
 A python module to aid and automate CTF web challenges.
+
+## Setup
+```
+$ pip3 install webwizard
+```
